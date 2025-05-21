@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/CSS/style.css" />
+    <title>About Pixaura</title>
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav>
+      <div class="logo">
+        <a href="index.html">
+          <img src="assets/logo.png" alt="Pixaura Logo" />
+        </a>
+      </div>
+      <button class="hamburger" id="hamburger-btn" aria-label="Open navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav" id="main-nav">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li>
+            <a href="https://lets-shoping.myshopmatic.com/products">Products</a>
+          </li>
+          <li><a href="about.html">About</a></li>
+          <li>
+            <a href="/contact.html">Contact</a>
+          </li>
+          <li>
+            <a href="#"><i class="fa-regular fa-user"></i></a>
+          </li>
+          <li>
+            <a href="#"><i class="fa-solid fa-magnifying-glass"></i></a>
+          </li>
+          <li class="cart-icon">
+            <a href="#">
+              <i class="fa-solid fa-cart-shopping"></i>
+              <span class="cart-badge"></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- About Section -->
+    <section class="about-section">
+      <h2><i class="fa-solid fa-palette"></i> About Pixaura</h2>
+      <div class="about-flex">
+        <div class="about-text">
+          <p>
+            <strong>Pixaura</strong> is a creative print-on-demand platform dedicated to helping you express your individuality. Founded with a passion for art, technology, and entrepreneurship, Pixaura empowers everyone to design and order unique products that reflect their personality and style.
+          </p>
+          <p>
+            Our journey began with a simple idea: to make high-quality, custom products accessible to all. Whether you’re an artist, a business, or someone who loves personalized gifts, Pixaura provides the tools and inspiration to bring your ideas to life. From custom t-shirts and mugs to phone cases and more, every item is made-to-order using premium materials and vibrant printing technology.
+          </p>
+          <ul class="about-highlights">
+            <li><i class="fa-solid fa-shirt"></i> Premium, made-to-order apparel</li>
+            <li><i class="fa-solid fa-mug-hot"></i> Personalized mugs & gifts</li>
+            <li><i class="fa-solid fa-mobile-screen"></i> Custom phone cases</li>
+            <li><i class="fa-solid fa-paintbrush"></i> Designed by you, made for you</li>
+          </ul>
+          <p>
+            At Pixaura, we believe in creativity, quality, and customer satisfaction. Our team is committed to providing a seamless experience from design to delivery. We take pride in supporting independent creators and ensuring every product is crafted with care.
+          </p>
+          <p>
+            Thank you for choosing Pixaura. We’re excited to be part of your creative journey!
+          </p>
+        </div>
+        <div class="about-image">
+          <img src="assets/about-creative.png" alt="Creative Print on Demand" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-logo">
+        <img src="assets/logo.png" alt="Pixaura Logo" />
+      </div>
+      <div class="footer-social">
+        <a href="https://facebook.com/" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://instagram.com/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://twitter.com/" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://wa.me/917078573072" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      </div>
+      <div class="footer-disclaimer">
+        Disclaimer: All products on this website are made-to-order and printed on demand. Colors and placements may slightly vary due to display settings or production processes.
+      </div>
+      <div class="footer-links">
+        <a href="/privacy-policy.html">Privacy Policy &nbsp; | &nbsp;</a>
+        <a href="/terms.html">Terms & Conditions &nbsp; | &nbsp;</a>
+        <a href="/refund-policy.html">Refund Policy</a>
+      </div>
+      <p>&copy; 2025 Pixaura. All Rights Reserved.</p>
+    </footer>
+    <a href="https://wa.me/917078573072" class="whatsapp-float" target="_blank" rel="noopener">
+      <img src="assets/whatsapp.png" alt="WhatsApp Chat" />
+    </a>
+    <script>
+      const hamburger = document.getElementById('hamburger-btn');
+      const nav = document.getElementById('main-nav');
+      hamburger.addEventListener('click', () => {
+        nav.classList.toggle('open');
+        hamburger.classList.toggle('active');
+      });
+      document.querySelectorAll('#main-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+          nav.classList.remove('open');
+          hamburger.classList.remove('active');
+        });
+      });
+    </script>
+  </body>
+</html>
