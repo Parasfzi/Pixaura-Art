@@ -1,7 +1,7 @@
 /* Add Helvetica font from local directory */
 @font-face {
   font-family: "Helvetica";
-  src: url("../fonts/Helvetica.ttf") format("ttf"),
+  src: url("font/Helvetica.ttf") format("ttf"),
     url("../fonts/Helvetica.woff") format("woff");
   font-weight: normal;
   font-style: normal;
