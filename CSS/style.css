@@ -2,7 +2,7 @@
 @font-face {
   font-family: "Helvetica";
   src: url("font/Helvetica.ttf") format("ttf"),
-    url("../fonts/Helvetica.woff") format("woff");
+    url("font/Helvetica.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
