@@ -1,4 +1,4 @@
-/* Add Helvetica font from local directory */
+
 @font-face {
   font-family: "Helvetica";
   src: url("font/Helvetica.ttf") format("ttf"),
