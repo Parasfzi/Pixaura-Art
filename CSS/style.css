@@ -855,7 +855,7 @@ section.featured-section {
 
 /* Animated gradient background using test-1, test-2, test-3 colors */
 .animated-gradient-bg {
-  background: linear-gradient(135deg, #A4FFE2 0%, #C7B8F6 25%, #99E6FF 50%, #A4FFE2 100%);
+  background: linear-gradient(135deg, #A4FFE2 25%, #C7B8F6 50%, #99E6FF 75%, #A4FFE2 100%);
   background-size: 100% 300%;
   animation: gradientMove 7.25s ease-in-out infinite;
 }
