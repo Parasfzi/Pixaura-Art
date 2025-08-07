@@ -2,6 +2,9 @@ const firebaseConfig = {
     apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
     authDomain: "chat-web-23e9c.firebaseapp.com",
     projectId: "chat-web-23e9c",
+    storageBucket: "chat-web-23e9c.appspot.com",
+    messagingSenderId: "90729782128",
+    appId: "1:90729782128:web:b051229c6c45866a87cdb5"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -102,9 +105,6 @@ function buyNow() {
     closeCart();
 }
 
-
-
-
 function openBuyForm() {
   document.getElementById("buyFormPopup").style.display = "block";
 }
@@ -126,44 +126,41 @@ document.getElementById("buyForm").addEventListener("submit", function(e) {
   closeBuyForm();
 });
 
+function submitOrder(e) {
+    if (e) e.preventDefault();
+    
+    const orderData = {
+        uid: auth.currentUser?.uid,
+        name: document.getElementById("fullName").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        state: document.getElementById("state").value,
+        pincode: document.getElementById("pincode").value,
+        phone: document.getElementById("phone").value,
+        items: cart,
+        total: cart.reduce((sum, item) => sum + item.price, 0),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
 
+    if (!orderData.uid) {
+        alert("Please log in to place an order");
+        return;
+    }
 
-function submitOrder() {
-  const name = document.getElementById("fullName").value;
-  const address = document.getElementById("address").value;
-  const city = document.getElementById("city").value;
-  const state = document.getElementById("state").value;
-  const pincode = document.getElementById("pincode").value;
-  const phone = document.getElementById("phone").value;
-
-  const user = auth.currentUser;
-
-  if (!user) {
-    alert("Please log in first!");
-    return;
-  }
-
-  const orderData = {
-    uid: user.uid,
-    name,
-    address,
-    city,
-    state,
-    pincode,
-    phone,
-    timestamp: new Date()
-  };
-
-  db.collection("orders").add(orderData)
-    .then(() => {
-      alert("Order placed successfully!");
-      cart = [];
-      updateCartCount();
-      closeBuyForm();
-    })
-    .catch((error) => {
-      console.error("Error placing order: ", error);
-    });
+    db.collection("orders").add(orderData)
+        .then(() => {
+            alert("Order placed successfully!");
+            cart = [];
+            updateCartCount();
+            closeBuyForm();
+        })
+        .catch((error) => {
+            alert("Error placing order: " + error.message);
+            console.error("Error placing order: ", error);
+        });
 }
+
+// Add event listener for the order form
+document.getElementById("orderForm").addEventListener("submit", submitOrder);
 
 
