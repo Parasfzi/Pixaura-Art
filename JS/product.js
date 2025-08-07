@@ -163,3 +163,38 @@ function submitOrder() {
       console.error("Error placing order: ", error);
     });
 }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const buyFormPopup = document.getElementById("buyFormPopup");
+  const buyForm = document.getElementById("buyForm");
+
+  document.querySelectorAll(".buy-now-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      buyFormPopup.style.display = "block";
+    });
+  });
+
+  buyForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    // Get values
+    const name = document.getElementById("userName").value;
+    const address = document.getElementById("userAddress").value;
+    const phone = document.getElementById("userPhone").value;
+
+    // Save to Firebase
+    try {
+      await addDoc(collection(db, "orders"), {
+        name,
+        address,
+        phone,
+        timestamp: serverTimestamp(),
+      });
+      alert("Order placed!");
+      buyForm.reset();
+      buyFormPopup.style.display = "none";
+    } catch (error) {
+      console.error("Error adding order: ", error);
+    }
+  });
+});
