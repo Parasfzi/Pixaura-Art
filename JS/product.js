@@ -157,9 +157,7 @@ function submitOrder() {
   db.collection("orders").add(orderData)
     .then(() => {
       alert("Order placed successfully!");
-      cart = [];
-      updateCartCount();
-      closeBuyForm();
+      document.getElementById("buyForm").style.display = "none";
     })
     .catch((error) => {
       console.error("Error placing order: ", error);
