@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Details - Pixaura</title>
+    <link rel="stylesheet" href="CSS/product.css">
+    <style>
+        .product-detail-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            padding: 32px;
+        }
+        .product-images-main {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .product-images-main img {
+            max-width: 350px;
+            max-height: 350px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+        .product-thumbnails {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .product-thumbnails img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid #eee;
+            cursor: pointer;
+            transition: border 0.2s;
+        }
+        .product-thumbnails img.active {
+            border: 2px solid #4CAF50;
+        }
+        .product-detail-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .product-detail-price {
+            color: #4CAF50;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .product-detail-desc {
+            margin-bottom: 24px;
+            color: #444;
+        }
+        .product-detail-actions {
+            display: flex;
+            gap: 16px;
+        }
+        .product-detail-actions button {
+            padding: 12px 28px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .add-to-cart-btn {
+            background: #4CAF50;
+            color: #fff;
+        }
+        .add-to-cart-btn:hover {
+            background: #388e3c;
+        }
+        .buy-now-btn {
+            background: #ff9800;
+            color: #fff;
+        }
+        .buy-now-btn:hover {
+            background: #e65100;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #4CAF50;
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 9999;
+        }
+        .toast.show { opacity: 1; pointer-events: auto; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="assets/logo.png" alt="Pixaura Logo" />
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="products.html">Products</a>
+        </div>
+    </nav>
+    <div id="product-detail"></div>
+    <div id="toast" class="toast"></div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script>
+    // Firebase config (same as your main JS)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
+        authDomain: "chat-web-23e9c.firebaseapp.com",
+        projectId: "chat-web-23e9c",
+        storageBucket: "chat-web-23e9c.appspot.com",
+        messagingSenderId: "90729782128",
+        appId: "1:90729782128:web:b051229c6c45866a87cdb5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Get product id from URL
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+    let productData = null;
+
+    // Toast function
+    function showToast(msg, type="success") {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.background = type === "error" ? "#e53935" : "#4CAF50";
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // Add to cart
+    function addToCart() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart.push(productData);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        showToast("Added to cart!");
+    }
+
+    // Buy now
+    function buyNow() {
+        addToCart();
+        window.location.href = "products.html#buyFormPopup";
+        // Or: window.location.href = "products.html?buynow=1";
+    }
+
+    // Image slider logic
+    function setMainImage(url) {
+        document.getElementById('main-product-img').src = url;
+        document.querySelectorAll('.product-thumbnails img').forEach(img => {
+            img.classList.toggle('active', img.src === url);
+        });
+    }
+
+    // Fetch and show product
+    db.collection("products").doc(productId).get().then(doc => {
+        if (!doc.exists) {
+            document.getElementById('product-detail').innerHTML = "Product not found!";
+            return;
+        }
+        const data = doc.data();
+        productData = { ...data, id: productId }; // for cart
+
+        // Images array support
+        let images = [];
+        if (Array.isArray(data.image)) images = data.image;
+        else if (Array.isArray(data.images)) images = data.images;
+        else if (typeof data.image === "string") images = [data.image];
+
+        let thumbnails = images.map((url, i) =>
+            `<img src="${url}" class="${i===0?'active':''}" onclick="setMainImage('${url.replace(/'/g,"\\'")}')">`
+        ).join('');
+
+        document.getElementById('product-detail').innerHTML = `
+            <div class="product-detail-container">
+                <div class="product-images-main">
+                    <img id="main-product-img" src="${images[0] || ''}" alt="${data.name}">
+                </div>
+                <div class="product-thumbnails">${thumbnails}</div>
+                <div class="product-detail-title">${data.name}</div>
+                <div class="product-detail-price">₹${data.price}</div>
+                <div class="product-detail-desc">${data.description || ""}</div>
+                <div class="product-detail-actions">
+                    <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    <button class="buy-now-btn" onclick="buyNow()">Buy Now</button>
+                </div>
+            </div>
+        `;
+        // Expose setMainImage to global for inline onclick
+        window.setMainImage = setMainImage;
+    }).catch(() => {
+        document.getElementById('product-detail').innerHTML = "Error loading product!";
+    });
+    </script>
+</body>
+</html>

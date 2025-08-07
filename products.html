@@ -1,100 +1,3 @@
-<!-- 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixaura - Product Page</title>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1RRJCD9CVW"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1RRJCD9CVW'); // Replace G-XXXXXXX with your gtag ID
-    </script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f2f2f2; }
-        .product { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
-        .login-box { margin-bottom: 20px; }
-    </style>
-</head>
-<body>
-    <h1>Pixaura Products</h1>
-
-    <div class="login-box">
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Login</button>
-        <button onclick="signup()">Signup</button>
-        <button onclick="logout()">Logout</button>
-    </div>
-
-    <div id="product-list"></div>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
-            authDomain: "chat-web-23e9c.firebaseapp.com",
-            projectId: "chat-web-23e9c",
-            storageBucket: "chat-web-23e9c.appspot.com",
-            messagingSenderId: "90729782128",
-            appId: "1:90729782128:web:b051229c6c45866a87cdb5"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        function login() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => alert("Logged in"))
-                .catch(err => alert(err.message));
-        }
-
-        function signup() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(() => alert("Account created"))
-                .catch(err => alert(err.message));
-        }
-
-        function logout() {
-            auth.signOut().then(() => alert("Logged out"));
-        }
-
-        function loadProducts() {
-            db.collection("products").get().then(snapshot => {
-                const productList = document.getElementById("product-list");
-                productList.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const div = document.createElement("div");
-                    div.className = "product";
-                    div.innerHTML = `<h3>${data.name}</h3><p>₹${data.price}</p><img src="${data.image}" width="100">`;
-                    productList.appendChild(div);
-                });
-            });
-        }
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                loadProducts();
-            } else {
-                document.getElementById("product-list").innerHTML = "<p>Please login to see products.</p>";
-            }
-        });
-    </script>
-</body>
-</html> -->
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,22 +23,27 @@
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="cart-badge">0</span>
             </span>
+            <span id="profile-name" class="profile-name"></span>
             <button onclick="logout()" class="logout-btn">Logout</button>
         </div>
     </nav>
 
     <div id="login-form" class="login-form">
         <h2>Login to Pixaura</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
         <button onclick="login()" class="login-btn">Login</button>
+        <button type="button" onclick="googleLogin()" class="login-btn" style="background:#4285F4;margin-top:10px;">
+            <i class="fa-brands fa-google"></i> Login with Google
+        </button>
         <p>Don't have an account? <button type="button" onclick="showSignup()" class="link-btn">Sign up</button></p>
     </div>
 
     <div id="signup-form" class="login-form hidden">
         <h2>Create Account</h2>
-        <input type="email" id="signup-email" placeholder="Email">
-        <input type="password" id="signup-password" placeholder="Password">
+        <input type="text" id="signup-name" placeholder="Full Name" required>
+        <input type="email" id="signup-email" placeholder="Email" required>
+        <input type="password" id="signup-password" placeholder="Password" required>
         <button onclick="signup()" class="signup-btn">Sign Up</button>
         <p>Already have an account? <button type="button" onclick="showLogin()" class="link-btn">Login</button></p>
     </div>
@@ -172,18 +80,54 @@
         </div>
     </div>
 
+    <div id="product-detail"></div>
+
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="JS/product.js"></script>
     <script>
-        // Modal helpers for fallback in case JS/product.js not loaded yet
-        function closeCart() {
-            document.getElementById('cart-modal').classList.add('hidden');
+    // Firebase config (same as your main JS)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
+        authDomain: "chat-web-23e9c.firebaseapp.com",
+        projectId: "chat-web-23e9c",
+        storageBucket: "chat-web-23e9c.appspot.com",
+        messagingSenderId: "90729782128",
+        appId: "1:90729782128:web:b051229c6c45866a87cdb5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Get product id from URL
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+
+    // Fetch and show product
+    db.collection("products").doc(productId).get().then(doc => {
+        if (!doc.exists) {
+            document.getElementById('product-detail').innerHTML = "Product not found!";
+            return;
         }
-        function closeBuyForm() {
-            document.getElementById('buyFormPopup').classList.add('hidden');
+        const data = doc.data();
+        let imagesHtml = "";
+        if (Array.isArray(data.image)) {
+            imagesHtml = data.image.map(url => `<img src="${url}" style="max-width:200px;margin:5px;">`).join('');
+        } else {
+            imagesHtml = `<img src="${data.image}" style="max-width:200px;">`;
         }
+        document.getElementById('product-detail').innerHTML = `
+            <h2>${data.name}</h2>
+            <div>${imagesHtml}</div>
+            <p><b>Price:</b> ₹${data.price}</p>
+            <p><b>Description:</b> ${data.description || ""}</p>
+        `;
+    });
+
+    function renderProductCard(data) {
+        const imgUrl = Array.isArray(data.image) ? data.image[0] : data.image;
+        // ...rest of the code
+    }
     </script>
 </body>
 </html>

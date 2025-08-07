@@ -18,6 +18,7 @@ const productContainer = document.getElementById("product-container");
 const cartModal = document.getElementById("cart-modal");
 const cartCount = document.getElementById("cart-count");
 const buyFormPopup = document.getElementById("buyFormPopup");
+const profileName = document.getElementById("profile-name");
 
 // State Management
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -26,6 +27,9 @@ let products = [];
 // Initialize cart count on page load
 document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
+    const orderForm = document.getElementById("orderForm");
+    if (orderForm) orderForm.addEventListener("submit", submitOrder);
+    if (cartCount) cartCount.addEventListener("click", showCart);
 });
 
 // Form Visibility Functions
@@ -42,6 +46,7 @@ function showSignup() {
 }
 
 function clearFormInputs(form) {
+    if (!form) return;
     form.querySelectorAll('input').forEach(input => input.value = '');
 }
 
@@ -65,10 +70,11 @@ async function login() {
 
 async function signup() {
     try {
+        const name = document.getElementById("signup-name").value.trim();
         const email = document.getElementById("signup-email").value.trim();
         const password = document.getElementById("signup-password").value;
         
-        if (!email || !password) {
+        if (!name || !email || !password) {
             throw new Error('Please fill in all fields');
         }
 
@@ -76,7 +82,8 @@ async function signup() {
             throw new Error('Password must be at least 6 characters');
         }
 
-        await auth.createUserWithEmailAndPassword(email, password);
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await userCredential.user.updateProfile({ displayName: name });
         showToast("Account created successfully!", "success");
         showLogin();
     } catch (err) {
@@ -122,13 +129,16 @@ async function loadProducts() {
 }
 
 function renderProductCard(data) {
+    const imgUrl = Array.isArray(data.image) ? data.image[0] : data.image;
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
-        <img src="${data.image}" alt="${data.name}" onerror="this.src='assets/placeholder.png'">
-        <h3>${data.name}</h3>
-        <p class="price">₹${data.price.toFixed(2)}</p>
-        <button onclick='addToCart(${JSON.stringify(data)})' class="add-to-cart-btn">
+        <a href="product.html?id=${data.id}" class="product-link">
+            <img src="${imgUrl}" alt="${data.name}">
+            <h3>${data.name}</h3>
+            <p class="price">₹${data.price}</p>
+        </a>
+        <button onclick='addToCart(${JSON.stringify(data)})'>
             <i class="fa-solid fa-cart-plus"></i> Add to Cart
         </button>
     `;
@@ -169,7 +179,7 @@ function showCart() {
     
     cartItems.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
-            <img src="${item.image}" alt="${item.name}" onerror="this.src='assets/placeholder.png'">
+            <img src="${Array.isArray(item.image) ? item.image[0] : item.image}" alt="${item.name}" onerror="this.src='assets/placeholder.png'">
             <div class="item-details">
                 <h4>${item.name}</h4>
                 <p>₹${item.price.toFixed(2)}</p>
@@ -276,10 +286,6 @@ function showToast(message, type = "success") {
     }, 100);
 }
 
-// Event Listeners
-document.getElementById("orderForm").addEventListener("submit", submitOrder);
-cartCount.addEventListener("click", showCart);
-
 // Auth state observer
 auth.onAuthStateChanged(user => {
     if (user) {
@@ -287,13 +293,30 @@ auth.onAuthStateChanged(user => {
         signupForm.classList.add("hidden");
         productContainer.classList.remove("hidden");
         loadProducts();
+        // Show user name in navbar
+        profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
+        profileName.style.display = "inline-block";
     } else {
         loginForm.classList.remove("hidden");
+        signupForm.classList.add("hidden");
         productContainer.classList.add("hidden");
         cart = [];
         localStorage.removeItem('cart');
         updateCartCount();
+        profileName.textContent = '';
+        profileName.style.display = "none";
     }
 });
+
+function googleLogin() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then(result => {
+            showToast("Logged in with Google!", "success");
+        })
+        .catch(error => {
+            showToast(error.message, "error");
+        });
+}
 
 

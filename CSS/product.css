@@ -123,6 +123,12 @@ button {
     font-size: inherit;
 }
 
+.login-btn.google {
+    background: #4285F4;
+    color: #fff;
+    margin-top: 10px;
+}
+
 /* Product Grid Styles */
 .product-container {
     display: grid;
@@ -263,6 +269,20 @@ button {
 /* Hidden Class */
 .hidden {
     display: none !important;
+}
+
+/* Profile Name Styles */
+.profile-name {
+    font-weight: bold;
+    color: #4CAF50;
+    margin-left: 10px;
+}
+
+/* Product Link Styles */
+.product-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 /* Responsive Design */
