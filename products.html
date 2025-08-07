@@ -102,58 +102,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Pixaura</title>
     <link rel="stylesheet" href="CSS/product.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" href="assets/favicon.png" type="image/png" />
 </head>
 <body>
     <nav class="navbar">
-        <h1>Pixaura</h1>
+        <div class="logo">
+            <a href="index.html">
+                <img src="assets/logo.png" alt="Pixaura Logo" />
+            </a>
+        </div>
         <div class="nav-links">
-            <span id="cart-count">Cart (0)</span>
-            <button onclick="logout()">Logout</button>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <span id="cart-count" class="cart-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-badge">0</span>
+            </span>
+            <button onclick="logout()" class="logout-btn">Logout</button>
         </div>
     </nav>
 
     <div id="login-form" class="login-form">
-        <h2>Login</h2>
+        <h2>Login to Pixaura</h2>
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Login</button>
+        <button onclick="login()" class="login-btn">Login</button>
+        <p>Don't have an account? <button type="button" onclick="showSignup()" class="link-btn">Sign up</button></p>
+    </div>
+
+    <div id="signup-form" class="login-form hidden">
+        <h2>Create Account</h2>
+        <input type="email" id="signup-email" placeholder="Email">
+        <input type="password" id="signup-password" placeholder="Password">
+        <button onclick="signup()" class="signup-btn">Sign Up</button>
+        <p>Already have an account? <button type="button" onclick="showLogin()" class="link-btn">Login</button></p>
     </div>
 
     <div id="product-container" class="product-container hidden"></div>
 
-    <div id="cart-modal" class="cart-modal hidden">
-        <h2>Your Cart</h2>
-        <div id="cart-items"></div>
-        <div id="cart-total"></div>
-        <button onclick="openBuyForm()">Buy Now</button>
-
-        <!-- <button onclick="buyNow()">Buy Now</button> -->
-        <button onclick="closeCart()">Close</button>
+    <div id="cart-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Your Cart <i class="fa-solid fa-cart-shopping"></i></h2>
+            <div id="cart-items"></div>
+            <div id="cart-total"></div>
+            <div class="cart-buttons">
+                <button type="button" onclick="openBuyForm()" class="buy-btn">Buy Now</button>
+                <button type="button" onclick="closeCart()" class="close-btn">Close</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Buy Now Form (Initially Hidden) -->
-<div id="buyFormPopup" class="modal hidden">
-    <div class="modal-content">
-        <h3>Enter Shipping Details</h3>
-        <form id="orderForm">
-            <input type="text" id="fullName" placeholder="Full Name" required>
-            <input type="text" id="address" placeholder="Address" required>
-            <input type="text" id="city" placeholder="City" required>
-            <input type="text" id="state" placeholder="State" required>
-            <input type="text" id="pincode" placeholder="Pincode" required>
-            <input type="tel" id="phone" placeholder="Phone Number" required>
-            <button type="submit">Submit Order</button>
-            <button type="button" onclick="closeBuyForm()">Cancel</button>
-        </form>
+    <div id="buyFormPopup" class="modal hidden">
+        <div class="modal-content">
+            <h3>Enter Shipping Details</h3>
+            <form id="orderForm">
+                <input type="text" id="fullName" placeholder="Full Name" required>
+                <input type="text" id="address" placeholder="Address" required>
+                <input type="text" id="city" placeholder="City" required>
+                <input type="text" id="state" placeholder="State" required>
+                <input type="text" id="pincode" placeholder="Pincode" required>
+                <input type="tel" id="phone" placeholder="Phone Number" required>
+                <div class="form-buttons">
+                    <button type="submit" class="submit-btn">Place Order</button>
+                    <button type="button" onclick="closeBuyForm()" class="close-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-
-
-
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="JS/product.js"></script>
+    <script>
+        // Modal helpers for fallback in case JS/product.js not loaded yet
+        function closeCart() {
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
+        function closeBuyForm() {
+            document.getElementById('buyFormPopup').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
