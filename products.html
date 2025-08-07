@@ -131,16 +131,18 @@
         <button onclick="closeCart()">Close</button>
     </div>
 
-    <div id="buyFormPopup" class="form-popup">
-  <form id="buyForm" class="form-container">
-    <h2>Shipping Details</h2>
-    <input type="text" id="name" placeholder="Your Name" required>
-    <input type="text" id="address" placeholder="Shipping Address" required>
-    <input type="tel" id="phone" placeholder="Phone Number" required>
-    <button type="submit">Place Order</button>
-    <button type="button" onclick="closeBuyForm()">Cancel</button>
-  </form>
+    <!-- Buy Now Form (Initially Hidden) -->
+<div id="buyForm" style="display:none; padding: 20px; border: 1px solid #ccc; margin-top: 20px;">
+  <h3>Enter Shipping Details</h3>
+  <input type="text" id="fullName" placeholder="Full Name" required><br><br>
+  <input type="text" id="address" placeholder="Address" required><br><br>
+  <input type="text" id="city" placeholder="City" required><br><br>
+  <input type="text" id="state" placeholder="State" required><br><br>
+  <input type="text" id="pincode" placeholder="Pincode" required><br><br>
+  <input type="tel" id="phone" placeholder="Phone Number" required><br><br>
+  <button onclick="submitOrder()">Submit Order</button>
 </div>
+
 
 
 

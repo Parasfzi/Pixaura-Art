@@ -102,6 +102,9 @@ function buyNow() {
     closeCart();
 }
 
+
+
+
 function openBuyForm() {
   document.getElementById("buyFormPopup").style.display = "block";
 }
@@ -122,3 +125,41 @@ document.getElementById("buyForm").addEventListener("submit", function(e) {
   alert("Order placed successfully!");
   closeBuyForm();
 });
+
+
+
+function submitOrder() {
+  const name = document.getElementById("fullName").value;
+  const address = document.getElementById("address").value;
+  const city = document.getElementById("city").value;
+  const state = document.getElementById("state").value;
+  const pincode = document.getElementById("pincode").value;
+  const phone = document.getElementById("phone").value;
+
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please log in first!");
+    return;
+  }
+
+  const orderData = {
+    uid: user.uid,
+    name,
+    address,
+    city,
+    state,
+    pincode,
+    phone,
+    timestamp: new Date()
+  };
+
+  db.collection("orders").add(orderData)
+    .then(() => {
+      alert("Order placed successfully!");
+      document.getElementById("buyForm").style.display = "none";
+    })
+    .catch((error) => {
+      console.error("Error placing order: ", error);
+    });
+}
