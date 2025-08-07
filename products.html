@@ -129,6 +129,19 @@
         <button onclick="closeCart()">Close</button>
     </div>
 
+    <div id="buyFormPopup" class="form-popup">
+  <form id="buyForm" class="form-container">
+    <h2>Shipping Details</h2>
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="text" id="address" placeholder="Shipping Address" required>
+    <input type="tel" id="phone" placeholder="Phone Number" required>
+    <button type="submit">Place Order</button>
+    <button type="button" onclick="closeBuyForm()">Cancel</button>
+  </form>
+</div>
+
+
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>

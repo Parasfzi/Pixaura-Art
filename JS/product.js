@@ -101,3 +101,24 @@ function buyNow() {
     updateCartCount();
     closeCart();
 }
+
+function openBuyForm() {
+  document.getElementById("buyFormPopup").style.display = "block";
+}
+
+function closeBuyForm() {
+  document.getElementById("buyFormPopup").style.display = "none";
+}
+
+document.getElementById("buyForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const name = document.getElementById("name").value;
+  const address = document.getElementById("address").value;
+  const phone = document.getElementById("phone").value;
+  
+  // You can send this to Firestore or console.log
+  console.log({ name, address, phone, cart });
+
+  alert("Order placed successfully!");
+  closeBuyForm();
+});
