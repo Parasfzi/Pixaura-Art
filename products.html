@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixaura - Product Page</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXX'); // Replace G-XXXXXXX with your gtag ID
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f2f2f2; }
+        .product { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
+        .login-box { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Pixaura Products</h1>
+
+    <div class="login-box">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <button onclick="signup()">Signup</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div id="product-list"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => alert("Logged in"))
+                .catch(err => alert(err.message));
+        }
+
+        function signup() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => alert("Account created"))
+                .catch(err => alert(err.message));
+        }
+
+        function logout() {
+            auth.signOut().then(() => alert("Logged out"));
+        }
+
+        function loadProducts() {
+            db.collection("products").get().then(snapshot => {
+                const productList = document.getElementById("product-list");
+                productList.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const div = document.createElement("div");
+                    div.className = "product";
+                    div.innerHTML = `<h3>${data.name}</h3><p>₹${data.price}</p><img src="${data.image}" width="100">`;
+                    productList.appendChild(div);
+                });
+            });
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loadProducts();
+            } else {
+                document.getElementById("product-list").innerHTML = "<p>Please login to see products.</p>";
+            }
+        });
+    </script>
+</body>
+</html>
