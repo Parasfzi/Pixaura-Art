@@ -98,178 +98,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pixaura - Product Page</title>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1RRJCD9CVW"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-1RRJCD9CVW');
-  </script>
-
-  <!-- CSS Styling -->
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f6fa;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .login-box, .product-list {
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-      margin-bottom: 20px;
-    }
-
-    .login-box input {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    .login-box button {
-      padding: 10px 20px;
-      margin-right: 10px;
-      border: none;
-      border-radius: 5px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-
-    .login-box button:hover {
-      background-color: #45a049;
-    }
-
-    .product {
-      border-bottom: 1px solid #eee;
-      padding: 15px 0;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .product img {
-      width: 100px;
-      height: auto;
-      border-radius: 5px;
-    }
-
-    .product h3 {
-      margin: 0;
-    }
-
-    .hidden {
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Pixaura</title>
+    <link rel="stylesheet" href="CSS/product.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Pixaura Products</h1>
+    <nav class="navbar">
+        <h1>Pixaura</h1>
+        <div class="nav-links">
+            <span id="cart-count">Cart (0)</span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
 
-    <div id="login-form" class="login-box">
-      <input type="email" id="email" placeholder="Email" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <button onclick="signup()">Signup</button>
+    <div id="login-form" class="login-form">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
     </div>
 
-    <div class="product-list hidden" id="product-section">
-      <button onclick="logout()" style="float:right; margin-bottom:10px;">Logout</button>
-      <div id="product-list"></div>
+    <div id="product-container" class="product-container hidden"></div>
+
+    <div id="cart-modal" class="cart-modal hidden">
+        <h2>Your Cart</h2>
+        <div id="cart-items"></div>
+        <div id="cart-total"></div>
+        <button onclick="buyNow()">Buy Now</button>
+        <button onclick="closeCart()">Close</button>
     </div>
-  </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
-      authDomain: "chat-web-23e9c.firebaseapp.com",
-      projectId: "chat-web-23e9c",
-      storageBucket: "chat-web-23e9c.appspot.com",
-      messagingSenderId: "90729782128",
-      appId: "1:90729782128:web:b051229c6c45866a87cdb5",
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .catch(err => alert(err.message));
-    }
-
-    function signup() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .catch(err => alert(err.message));
-    }
-
-    function logout() {
-      auth.signOut();
-    }
-
-    function loadProducts() {
-      db.collection("products").get().then(snapshot => {
-        const productList = document.getElementById("product-list");
-        productList.innerHTML = "";
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const div = document.createElement("div");
-          div.className = "product";
-          div.innerHTML = `
-            <img src="${data.image}" alt="${data.name}" />
-            <div>
-              <h3>${data.name}</h3>
-              <p>₹${data.price}</p>
-            </div>
-          `;
-          productList.appendChild(div);
-        });
-      });
-    }
-
-    auth.onAuthStateChanged(user => {
-      const loginForm = document.getElementById("login-form");
-      const productSection = document.getElementById("product-section");
-      if (user) {
-        loginForm.classList.add("hidden");
-        productSection.classList.remove("hidden");
-        loadProducts();
-      } else {
-        loginForm.classList.remove("hidden");
-        productSection.classList.add("hidden");
-      }
-    });
-  </script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="JS/product.js"></script>
 </body>
 </html>
