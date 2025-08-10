@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Product Details - Pixaura</title>
+    <link rel="stylesheet" href="CSS/style.css">
     <link rel="stylesheet" href="CSS/product.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         .product-detail-container {
             max-width: 800px;
-            margin: 40px auto;
+            margin: 48px auto 32px auto;
             background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            padding: 32px;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(44, 83, 100, 0.07);
+            padding: 40px 32px;
         }
         .product-images-main {
             width: 100%;
@@ -21,8 +23,9 @@
         .product-images-main img {
             max-width: 350px;
             max-height: 350px;
-            border-radius: 10px;
+            border-radius: 14px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            background: #f8f9fa;
         }
         .product-thumbnails {
             display: flex;
@@ -34,17 +37,21 @@
             width: 60px;
             height: 60px;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 2px solid #eee;
             cursor: pointer;
             transition: border 0.2s;
+            background: #f8f9fa;
         }
         .product-thumbnails img.active {
-            border: 2px solid #4CAF50;
+            border: 2px solid #7fdbda;
         }
         .product-detail-title {
             font-size: 2rem;
             margin-bottom: 10px;
+            color: #2c5364;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
         .product-detail-price {
             color: #4CAF50;
@@ -59,22 +66,25 @@
         .product-detail-actions {
             display: flex;
             gap: 16px;
+            margin-top: 18px;
         }
         .product-detail-actions button {
             padding: 12px 28px;
             font-size: 1rem;
-            border-radius: 6px;
+            border-radius: 30px;
             border: none;
             cursor: pointer;
             font-weight: 600;
             transition: background 0.2s;
         }
         .add-to-cart-btn {
-            background: #4CAF50;
-            color: #fff;
+            background: #7fdbda;
+            color: #222;
         }
         .add-to-cart-btn:hover {
-            background: #388e3c;
+            background: #fff;
+            color: #2c5364;
+            border: 1px solid #7fdbda;
         }
         .buy-now-btn {
             background: #ff9800;
@@ -97,9 +107,18 @@
             z-index: 9999;
         }
         .toast.show { opacity: 1; pointer-events: auto; }
+        @media (max-width: 900px) {
+            .product-detail-container {
+                padding: 24px 8px;
+                margin: 18px 6px;
+            }
+            .product-images-main img {
+                max-width: 90vw;
+            }
+        }
     </style>
 </head>
-<body>
+<body class="animated-gradient-bg">
     <nav class="navbar">
         <div class="logo">
             <a href="index.html">
@@ -113,8 +132,31 @@
             <a href="products.html">Products</a>
         </div>
     </nav>
-    <div id="product-detail"></div>
+    <main>
+        <div id="product-detail"></div>
+    </main>
     <div id="toast" class="toast"></div>
+    <!-- Footer (same as home page) -->
+    <footer class="footer">
+      <div class="footer-logo">
+        <img src="assets/logo.png" alt="Pixaura Logo" />
+      </div>
+      <div class="footer-social">
+        <a href="https://facebook.com/" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://instagram.com/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://twitter.com/" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://wa.me/917078573072" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      </div>
+      <div class="footer-disclaimer">
+        Disclaimer: All products on this website are made-to-order and printed on demand. Colors and placements may slightly vary due to display settings or production processes.
+      </div>
+      <div class="footer-links">
+        <a href="privacy-policy.html">Privacy Policy &nbsp; | &nbsp;</a>
+        <a href="terms.html">Terms & Conditions &nbsp; | &nbsp;</a>
+        <a href="refund-policy.html">Refund Policy</a>
+      </div>
+      <p>&copy; 2025 Pixaura. All Rights Reserved.</p>
+    </footer>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script>
@@ -156,7 +198,6 @@
     function buyNow() {
         addToCart();
         window.location.href = "products.html#buyFormPopup";
-        // Or: window.location.href = "products.html?buynow=1";
     }
 
     // Image slider logic
@@ -187,7 +228,7 @@
         ).join('');
 
         document.getElementById('product-detail').innerHTML = `
-            <div class="product-detail-container">
+            <div class="product-detail-container animated-gradient-bg">
                 <div class="product-images-main">
                     <img id="main-product-img" src="${images[0] || ''}" alt="${data.name}">
                 </div>
