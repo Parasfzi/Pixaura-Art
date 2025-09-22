@@ -30,6 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const orderForm = document.getElementById("orderForm");
     if (orderForm) orderForm.addEventListener("submit", submitOrder);
     if (cartCount) cartCount.addEventListener("click", showCart);
+
+    if (document.getElementById('product-detail')) {
+        loadProductDetails();
+    }
 });
 
 // Form Visibility Functions
@@ -126,6 +130,62 @@ async function loadProducts() {
         showToast("Error loading products: " + error.message, "error");
         productContainer.innerHTML = '<div class="error">Failed to load products</div>';
     }
+}
+
+function loadProductDetails() {
+    const productDetailContainer = document.getElementById('product-detail');
+    if (!productDetailContainer) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+    if (!productId) {
+        productDetailContainer.innerHTML = "No product specified.";
+        return;
+    }
+
+    db.collection("products").doc(productId).get().then(doc => {
+        if (!doc.exists) {
+            productDetailContainer.innerHTML = "Product not found!";
+            return;
+        }
+        const data = doc.data();
+        const productData = { ...data, id: productId }; // for cart
+
+        let images = [];
+        if (Array.isArray(data.image)) images = data.image;
+        else if (Array.isArray(data.images)) images = data.images;
+        else if (typeof data.image === "string") images = [data.image];
+
+        let thumbnails = images.map((url, i) =>
+            `<img src="${url}" class="${i===0?'active':''}" onclick="setMainImage('${url.replace(/'/g,"\\'")}')">`
+        ).join('');
+
+        productDetailContainer.innerHTML = `
+            <div class="product-detail-container">
+                <div class="product-images-main">
+                    <img id="main-product-img" src="${images[0] || ''}" alt="${data.name}">
+                </div>
+                <div class="product-thumbnails">${thumbnails}</div>
+                <div class="product-detail-title">${data.name}</div>
+                <div class="product-detail-price">₹${data.price}</div>
+                <div class="product-detail-desc">${data.description || ""}</div>
+                <div class="product-detail-actions">
+                    <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(productData)})'>Add to Cart</button>
+                    <button class="buy-now-btn" onclick='buyNow(${JSON.stringify(productData)})'>Buy Now</button>
+                </div>
+            </div>
+        `;
+        window.setMainImage = setMainImage;
+    }).catch(() => {
+        productDetailContainer.innerHTML = "Error loading product!";
+    });
+}
+
+function setMainImage(url) {
+    document.getElementById('main-product-img').src = url;
+    document.querySelectorAll('.product-thumbnails img').forEach(img => {
+        img.classList.toggle('active', img.src === url);
+    });
 }
 
 function renderProductCard(data) {
