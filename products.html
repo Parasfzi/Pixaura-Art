@@ -1,54 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Products - Pixaura</title>
-    <link rel="stylesheet" href="CSS/product.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="icon" href="assets/favicon.png" type="image/png" />
+    <meta content="Pixaura creates and sells unique, original artwork printed on t-shirts, mugs, phone cases, and more. Designed with passion and delivered with care." name="description"/>
+    <meta content="Pixaura, custom artwork, original designs, designer t-shirts, artistic mugs, creative phone cases, handcrafted merchandise, unique fashion, limited edition products, art printed clothing, personalized gifting" name="keywords"/>
+    <meta content="Pixaura" name="author"/>
+    <meta content="index, follow" name="robots"/>
+    <link href="https://parasfzi.github.io/Pixaura-Art/products.html" rel="canonical"/>
+    <!-- Open Graph / Facebook -->
+    <meta content="website" property="og:type"/>
+    <meta content="Pixaura - Products" property="og:title"/>
+    <meta content="Unique designs by Pixaura printed on premium quality products. Expressive, creative and made for art lovers." property="og:description"/>
+    <meta content="https://parasfzi.github.io/Pixaura-Art/products.html" property="og:url"/>
+    <meta content="https://parasfzi.github.io/Pixaura-Art/assets/hero-printondemand.png" property="og:image"/>
+    <!-- Twitter Card -->
+    <meta content="summary_large_image" name="twitter:card"/>
+    <meta content="Pixaura - Products" name="twitter:title"/>
+    <meta content="Explore original designs printed on t-shirts, mugs, and more. Crafted by Pixaura, made for you." name="twitter:description"/>
+    <meta content="https://parasfzi.github.io/Pixaura-Art/assets/hero-printondemand.png" name="twitter:image"/>
+    <link href="assets/favicon.png" rel="icon" type="image/x-icon"/>
+    <link href="CSS/style.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet"/>
 </head>
-<body>
-    <nav class="navbar">
+<body class="animated-gradient-bg">
+    <!-- Navigation -->
+    <nav>
         <div class="logo">
-            <a href="index.html">
-                <img src="assets/logo.png" alt="Pixaura Logo" />
-            </a>
+            <a href="index.html"><img alt="Pixaura Logo" loading="lazy" src="assets/logo.png"/></a>
         </div>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="contact.html">Contact</a>
-            <span id="cart-count" class="cart-icon">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span class="cart-badge">0</span>
-            </span>
-            <span id="profile-name" class="profile-name"></span>
-            <button onclick="logout()" class="logout-btn">Logout</button>
+        <button aria-label="Toggle navigation" class="hamburger" id="hamburger-btn">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav" id="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a aria-label="User" href="#" id="user-actions"><i class="fa-regular fa-user"></i></a></li>
+                <li><a aria-label="Search" href="#"><i class="fa-solid fa-magnifying-glass"></i></a></li>
+                <li class="cart-icon">
+                    <a aria-label="Cart" href="#" onclick="openCart()">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span id="cart-badge" class="cart-badge">0</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </nav>
 
-    <div id="login-form" class="login-form">
-        <h2>Login to Pixaura</h2>
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button onclick="login()" class="login-btn">Login</button>
-        <button type="button" onclick="googleLogin()" class="login-btn" style="background:#4285F4;margin-top:10px;">
-            <i class="fa-brands fa-google"></i> Login with Google
-        </button>
-        <p>Don't have an account? <button type="button" onclick="showSignup()" class="link-btn">Sign up</button></p>
-    </div>
+    <main>
+        <section class="policy-section">
+            <div id="login-form" class="login-form">
+                <h2>Login to Pixaura</h2>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button onclick="login()" class="login-btn">Login</button>
+                <button type="button" onclick="googleLogin()" class="login-btn" style="background:#4285F4;margin-top:10px;">
+                    <i class="fa-brands fa-google"></i> Login with Google
+                </button>
+                <p>Don't have an account? <button type="button" onclick="showSignup()" class="link-btn">Sign up</button></p>
+            </div>
 
-    <div id="signup-form" class="login-form hidden">
-        <h2>Create Account</h2>
-        <input type="text" id="signup-name" placeholder="Full Name" required>
-        <input type="email" id="signup-email" placeholder="Email" required>
-        <input type="password" id="signup-password" placeholder="Password" required>
-        <button onclick="signup()" class="signup-btn">Sign Up</button>
-        <p>Already have an account? <button type="button" onclick="showLogin()" class="link-btn">Login</button></p>
-    </div>
+            <div id="signup-form" class="login-form hidden">
+                <h2>Create Account</h2>
+                <input type="text" id="signup-name" placeholder="Full Name" required>
+                <input type="email" id="signup-email" placeholder="Email" required>
+                <input type="password" id="signup-password" placeholder="Password" required>
+                <button onclick="signup()" class="signup-btn">Sign Up</button>
+                <p>Already have an account? <button type="button" onclick="showLogin()" class="link-btn">Login</button></p>
+            </div>
+        </section>
 
-    <div id="product-container" class="product-container hidden"></div>
+        <section id="products-section" class="featured-section hidden">
+            <h2><i class="fa-solid fa-star"></i> Our Creations</h2>
+            <div id="product-container" class="featured-flex">
+                <!-- Products will be injected here by product.js -->
+            </div>
+        </section>
+    </main>
 
     <div id="cart-modal" class="modal hidden">
         <div class="modal-content">
@@ -80,54 +112,35 @@
         </div>
     </div>
 
-    <div id="product-detail"></div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">
+            <img src="assets/logo.png" alt="Pixaura Logo" />
+        </div>
+        <div class="footer-social">
+            <a href="https://facebook.com/" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://instagram.com/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com/" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="https://wa.me/917078573072" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <div class="footer-disclaimer">
+            Disclaimer: All products on this website are made-to-order and printed on demand. Colors and placements may slightly vary due to display settings or production processes.
+        </div>
+        <div class="footer-links">
+            <a href="privacy-policy.html">Privacy Policy &nbsp; | &nbsp;</a>
+            <a href="terms.html">Terms & Conditions &nbsp; | &nbsp;</a>
+            <a href="refund-policy.html">Refund Policy</a>
+        </div>
+        <p>&copy; 2025 Pixaura. All Rights Reserved.</p>
+    </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="JS/product.js"></script>
-    <script>
-    // Firebase config (same as your main JS)
-    const firebaseConfig = {
-        apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
-        authDomain: "chat-web-23e9c.firebaseapp.com",
-        projectId: "chat-web-23e9c",
-        storageBucket: "chat-web-23e9c.appspot.com",
-        messagingSenderId: "90729782128",
-        appId: "1:90729782128:web:b051229c6c45866a87cdb5"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Get product id from URL
-    const params = new URLSearchParams(window.location.search);
-    const productId = params.get('id');
-
-    // Fetch and show product
-    db.collection("products").doc(productId).get().then(doc => {
-        if (!doc.exists) {
-            document.getElementById('product-detail').innerHTML = "Product not found!";
-            return;
-        }
-        const data = doc.data();
-        let imagesHtml = "";
-        if (Array.isArray(data.image)) {
-            imagesHtml = data.image.map(url => `<img src="${url}" style="max-width:200px;margin:5px;">`).join('');
-        } else {
-            imagesHtml = `<img src="${data.image}" style="max-width:200px;">`;
-        }
-        document.getElementById('product-detail').innerHTML = `
-            <h2>${data.name}</h2>
-            <div>${imagesHtml}</div>
-            <p><b>Price:</b> ₹${data.price}</p>
-            <p><b>Description:</b> ${data.description || ""}</p>
-        `;
-    });
-
-    function renderProductCard(data) {
-        const imgUrl = Array.isArray(data.image) ? data.image[0] : data.image;
-        // ...rest of the code
-    }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js"></script>
+    <script src="JS/script.js"></script>
 </body>
 </html>
