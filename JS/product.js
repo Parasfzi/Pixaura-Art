@@ -1,15 +1,3 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
-    authDomain: "chat-web-23e9c.firebaseapp.com",
-    projectId: "chat-web-23e9c",
-    storageBucket: "chat-web-23e9c.appspot.com",
-    messagingSenderId: "90729782128",
-    appId: "1:90729782128:web:b051229c6c45866a87cdb5"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
 
 // DOM Elements
 const loginForm = document.getElementById("login-form");
@@ -30,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const orderForm = document.getElementById("orderForm");
     if (orderForm) orderForm.addEventListener("submit", submitOrder);
     if (cartCount) cartCount.addEventListener("click", showCart);
+
+    if (window.location.hash === '#buyFormPopup') {
+        showCart();
+        openBuyForm();
+    }
 });
 
 // Form Visibility Functions
