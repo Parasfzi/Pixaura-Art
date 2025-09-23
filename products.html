@@ -60,7 +60,7 @@
         </section>
 
         <!-- Products Grid -->
-        <section class="featured-section animated-gradient-bg hidden" id="products-section">
+        <section class="featured-section animated-gradient-bg" id="products-section">
             <h2><i class="fa-solid fa-star"></i> Our Creations</h2>
             <div id="product-container" class="featured-flex">
                 <!-- Products will be injected here by JavaScript -->
@@ -126,7 +126,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script>
-        const firebaseConfig = {
+        var firebaseConfig = {
             apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
             authDomain: "chat-web-23e9c.firebaseapp.com",
             projectId: "chat-web-23e9c",
@@ -135,8 +135,8 @@
             appId: "1:90729782128:web:b051229c6c45866a87cdb5"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        var auth = firebase.auth();
+        var db = firebase.firestore();
     </script>
     <script src="JS/product.js"></script>
 </body>

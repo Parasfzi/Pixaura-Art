@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
         showCart();
         openBuyForm();
     }
+
+    productContainer.classList.remove("hidden");
+    loadProducts();
 });
 
 // Form Visibility Functions
@@ -281,18 +284,14 @@ function showToast(message, type = "success") {
 
 // Auth state observer
 auth.onAuthStateChanged(user => {
+    const authSection = document.getElementById('auth-section');
     if (user) {
-        loginForm.classList.add("hidden");
-        signupForm.classList.add("hidden");
-        productContainer.classList.remove("hidden");
-        loadProducts();
+        authSection.classList.add("hidden");
         // Show user name in navbar
         profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
         profileName.style.display = "inline-block";
     } else {
-        loginForm.classList.remove("hidden");
-        signupForm.classList.add("hidden");
-        productContainer.classList.add("hidden");
+        authSection.classList.remove("hidden");
         cart = [];
         localStorage.removeItem('cart');
         updateCartCount();
