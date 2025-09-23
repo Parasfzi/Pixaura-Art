@@ -23,9 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showCart();
         openBuyForm();
     }
-
-    productContainer.classList.remove("hidden");
-    loadProducts();
 });
 
 // Form Visibility Functions
@@ -97,6 +94,23 @@ async function logout() {
     } catch (err) {
         showToast("Error logging out: " + err.message, "error");
     }
+}
+
+function renderProductCard(data) {
+    const imgUrl = Array.isArray(data.image) ? data.image[0] : data.image;
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+        <a href="product.html?id=${data.id}" class="product-link">
+            <img src="${imgUrl}" alt="${data.name}">
+            <h3>${data.name}</h3>
+            <p class="price">₹${data.price}</p>
+        </a>
+        <button onclick='addToCart(${JSON.stringify(data)})' class="add-to-cart-btn">
+            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+        </button>
+    `;
+    productContainer.appendChild(card);
 }
 
 // Product Functions
@@ -285,13 +299,17 @@ function showToast(message, type = "success") {
 // Auth state observer
 auth.onAuthStateChanged(user => {
     const authSection = document.getElementById('auth-section');
+    const productsSection = document.getElementById('products-section');
     if (user) {
         authSection.classList.add("hidden");
+        productsSection.classList.remove("hidden");
+        loadProducts();
         // Show user name in navbar
         profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
         profileName.style.display = "inline-block";
     } else {
         authSection.classList.remove("hidden");
+        productsSection.classList.add("hidden");
         cart = [];
         localStorage.removeItem('cart');
         updateCartCount();

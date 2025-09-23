@@ -65,9 +65,11 @@
 <li><a href="products.html">Products</a></li>
 <li><a href="about.html">About</a></li>
 <li><a href="contact.html">Contact</a></li>
-<li><a aria-label="User" href="#"><i class="fa-regular fa-user"></i></a></li>
+<li id="user-li"><a id="user-icon" aria-label="User" href="products.html"><i class="fa-regular fa-user"></i></a></li>
 <li><a aria-label="Search" href="#"><i class="fa-solid fa-magnifying-glass"></i></a></li>
 <li class="cart-icon" id="cart-count">
+    <span id="profile-name" class="profile-name" style="display: none;"></span>
+    <button id="logout-btn" class="logout-btn" style="display: none;">Logout</button>
 <a aria-label="Cart" href="#">
 <i class="fa-solid fa-cart-shopping"></i>
 <span class="cart-badge"></span>
@@ -184,6 +186,21 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
+        authDomain: "chat-web-23e9c.firebaseapp.com",
+        projectId: "chat-web-23e9c",
+        storageBucket: "chat-web-23e9c.appspot.com",
+        messagingSenderId: "90729782128",
+        appId: "1:90729782128:web:b051229c6c45866a87cdb5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+</script>
+<script src="JS/auth-nav.js"></script>
 <script src="JS/script.js"></script>
 </body>
 </html>
