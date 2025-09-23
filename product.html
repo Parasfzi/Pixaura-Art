@@ -88,6 +88,18 @@
         const productId = params.get('id');
         let productData = null;
 
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCountEl = document.getElementById("cart-count");
+            if(cartCountEl){
+                const badge = cartCountEl.querySelector(".cart-badge");
+                if(badge){
+                    badge.textContent = cart.length;
+                    badge.style.display = cart.length ? 'block' : 'none';
+                }
+            }
+        }
+        document.addEventListener('DOMContentLoaded', updateCartCount);
         // Toast function
         function showToast(msg, type="success") {
             const toast = document.getElementById('toast');
@@ -107,6 +119,7 @@
             cart.push(productData);
             localStorage.setItem('cart', JSON.stringify(cart));
             showToast("Added to cart!");
+            updateCartCount();
         }
 
         // Buy now
