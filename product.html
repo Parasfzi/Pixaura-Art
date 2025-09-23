@@ -65,6 +65,7 @@
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script>
         const firebaseConfig = {
@@ -76,6 +77,7 @@
             appId: "1:90729782128:web:b051229c6c45866a87cdb5"
         };
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.firestore();
     </script>
     <script src="JS/product-detail.js"></script>
