@@ -35,10 +35,15 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: black;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(10px);
   padding: 6px 100px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .logo img {
@@ -74,8 +79,48 @@ nav {
 }
 
 .nav ul li a:hover,
-.nav ul li a:focus {
-  color: gray;
+.nav ul li a:focus,
+.nav ul li a.active {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Profile Dropdown Menu */
+.profile-menu-container {
+    position: relative;
+}
+
+#profile-menu-trigger {
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    min-width: 160px;
+    z-index: 1001;
+    overflow: hidden;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f5f5f5;
 }
 
 .nav ul li .fa-user,

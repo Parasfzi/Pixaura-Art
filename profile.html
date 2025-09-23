@@ -23,10 +23,15 @@
                 <li><a href="about.html">About</a></li>
                 <li><a href="contact.html">Contact</a></li>
                 <li id="user-li"><a id="user-icon" aria-label="User" href="products.html"><i class="fa-regular fa-user"></i></a></li>
+                <li class="profile-menu-container" style="display: none;">
+                    <a href="#" id="profile-menu-trigger"></a>
+                    <div class="dropdown-menu" id="profile-dropdown">
+                        <a href="profile.html">View Profile</a>
+                        <a href="#" id="logout-btn">Logout</a>
+                    </div>
+                </li>
                 <li><a aria-label="Search" href="#"><i class="fa-solid fa-magnifying-glass"></i></a></li>
                 <li class="cart-icon" id="cart-count">
-                    <span id="profile-name" class="profile-name" style="display: none;"></span>
-                    <button id="logout-btn" class="logout-btn" style="display: none;">Logout</button>
                     <a aria-label="Cart" href="#">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span class="cart-badge"></span>

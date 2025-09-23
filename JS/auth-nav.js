@@ -1,39 +1,48 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const profileName = document.getElementById("profile-name");
-    const logoutBtn = document.getElementById("logout-btn");
-    const userIcon = document.getElementById("user-icon");
-    const userLi = document.getElementById("user-li");
-
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            if(profileName){
-                const profileLink = document.createElement('a');
-                profileLink.href = 'profile.html';
-                profileLink.textContent = user.displayName ? `Hi, ${user.displayName}` : 'Hi, User';
-                profileName.innerHTML = '';
-                profileName.appendChild(profileLink);
-                profileName.style.display = 'inline-block';
-            }
-            if(logoutBtn) logoutBtn.style.display = 'inline-block';
-            if(userIcon) userIcon.style.display = 'none';
-            if(userLi) userLi.style.display = 'none';
-
-        } else {
-            if(profileName) profileName.style.display = 'none';
-            if(logoutBtn) logoutBtn.style.display = 'none';
-            if(userIcon) userIcon.style.display = 'inline-block';
-            if(userLi) userLi.style.display = 'inline-block';
+    // Active link highlighting
+    const navLinks = document.querySelectorAll('.nav a');
+    const currentPath = window.location.pathname.split('/').pop();
+    navLinks.forEach(link => {
+        const linkPath = link.getAttribute('href').split('/').pop();
+        if (linkPath === currentPath) {
+            link.classList.add('active');
         }
     });
 
-    if(logoutBtn){
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut().then(() => {
-                window.location.href = "index.html";
-            }).catch((error) => {
-                console.error("Sign out error", error);
-            });
+    const userLi = document.getElementById("user-li");
+    const profileMenuContainer = document.querySelector(".profile-menu-container");
+    const profileMenuTrigger = document.getElementById("profile-menu-trigger");
+    const profileDropdown = document.getElementById("profile-dropdown");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            userLi.style.display = 'none';
+            profileMenuContainer.style.display = 'inline-block';
+            profileMenuTrigger.textContent = user.displayName ? `Hi, ${user.displayName}` : 'Hi, User';
+        } else {
+            userLi.style.display = 'inline-block';
+            profileMenuContainer.style.display = 'none';
+        }
+    });
+
+    profileMenuTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        profileDropdown.classList.toggle('show');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (!profileMenuContainer.contains(e.target)) {
+            profileDropdown.classList.remove('show');
+        }
+    });
+
+    logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        auth.signOut().then(() => {
+            window.location.href = "index.html";
+        }).catch((error) => {
+            console.error("Sign out error", error);
         });
-    }
+    });
 });
