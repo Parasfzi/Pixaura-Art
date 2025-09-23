@@ -14,13 +14,10 @@ let products = [];
 
 // Initialize cart count on page load
 document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount();
     const orderForm = document.getElementById("orderForm");
     if (orderForm) orderForm.addEventListener("submit", submitOrder);
-    if (cartCount) cartCount.addEventListener("click", showCart);
 
     if (window.location.hash === '#buyFormPopup') {
-        showCart();
         openBuyForm();
     }
 });
@@ -162,54 +159,11 @@ function addToCart(product) {
         return;
     }
     
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
     cart.push(product);
-    updateCartCount();
-    saveCartToLocalStorage();
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.updateCartCount();
     showToast("Added to cart!", "success");
-}
-
-function updateCartCount() {
-    const badge = cartCount.querySelector(".cart-badge");
-    badge.textContent = cart.length;
-    badge.style.display = cart.length ? 'block' : 'none';
-}
-
-function showCart() {
-    const cartItems = document.getElementById("cart-items");
-    const cartTotal = document.getElementById("cart-total");
-    const cartModal = document.getElementById("cart-modal");
-    if (cart.length === 0) {
-        cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-        cartTotal.innerHTML = '';
-        cartModal.classList.remove("hidden");
-        return;
-    }
-
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    
-    cartItems.innerHTML = cart.map((item, index) => `
-        <div class="cart-item">
-            <img src="${Array.isArray(item.image) ? item.image[0] : item.image}" alt="${item.name}" onerror="this.src='assets/placeholder.png'">
-            <div class="item-details">
-                <h4>${item.name}</h4>
-                <p>₹${item.price.toFixed(2)}</p>
-            </div>
-            <button onclick="removeFromCart(${index})" class="remove-btn">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        </div>
-    `).join('');
-    
-    cartTotal.innerHTML = `
-        <h3>Total: ₹${total.toFixed(2)}</h3>
-        <p class="item-count">${cart.length} item${cart.length !== 1 ? 's' : ''}</p>
-    `;
-    
-    cartModal.classList.remove("hidden");
-}
-
-function closeCart() {
-    document.getElementById("cart-modal").classList.add("hidden");
 }
 
 function openBuyForm() {
@@ -218,14 +172,6 @@ function openBuyForm() {
 
 function closeBuyForm() {
     document.getElementById("buyFormPopup").classList.add("hidden");
-}
-
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    updateCartCount();
-    saveCartToLocalStorage();
-    showCart();
-    showToast("Item removed from cart!", "success");
 }
 
 function saveCartToLocalStorage() {

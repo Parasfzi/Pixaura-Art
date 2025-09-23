@@ -1191,6 +1191,17 @@ section.featured-section {
     margin-top: 1rem;
 }
 
+@media (max-width: 600px) {
+    .login-form {
+        padding: 1.5rem;
+    }
+
+    #auth-section, .policy-section {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}
+
 /* Profile Form Styles */
 #profile-form .form-group {
     margin-bottom: 1.5rem;

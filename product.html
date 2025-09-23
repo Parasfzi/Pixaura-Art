@@ -49,6 +49,19 @@
 
     <div id="toast" class="toast"></div>
 
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Your Cart <i class="fa-solid fa-cart-shopping"></i></h2>
+            <div id="cart-items"></div>
+            <div id="cart-total"></div>
+            <div class="cart-buttons">
+                <button type="button" onclick="window.location.href='products.html#buyFormPopup'" class="buy-btn">Buy Now</button>
+                <button type="button" class="close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
       <div class="footer-logo">
@@ -75,6 +88,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="JS/auth-nav.js"></script>
+    <script src="JS/cart.js"></script>
+    <script src="JS/script.js"></script>
     <script>
         var firebaseConfig = {
             apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
@@ -93,18 +108,6 @@
         const productId = params.get('id');
         let productData = null;
 
-        function updateCartCount() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const cartCountEl = document.getElementById("cart-count");
-            if(cartCountEl){
-                const badge = cartCountEl.querySelector(".cart-badge");
-                if(badge){
-                    badge.textContent = cart.length;
-                    badge.style.display = cart.length ? 'block' : 'none';
-                }
-            }
-        }
-        document.addEventListener('DOMContentLoaded', updateCartCount);
         // Toast function
         function showToast(msg, type="success") {
             const toast = document.getElementById('toast');
@@ -124,7 +127,7 @@
             cart.push(productData);
             localStorage.setItem('cart', JSON.stringify(cart));
             showToast("Added to cart!");
-            updateCartCount();
+            window.updateCartCount();
         }
 
         // Buy now
