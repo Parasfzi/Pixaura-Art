@@ -8,7 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     auth.onAuthStateChanged(user => {
         if (user) {
             if(profileName){
-                profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : 'Hi, User';
+                const profileLink = document.createElement('a');
+                profileLink.href = 'profile.html';
+                profileLink.textContent = user.displayName ? `Hi, ${user.displayName}` : 'Hi, User';
+                profileName.innerHTML = '';
+                profileName.appendChild(profileLink);
                 profileName.style.display = 'inline-block';
             }
             if(logoutBtn) logoutBtn.style.display = 'inline-block';
