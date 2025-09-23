@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile - Pixaura</title>
+    <title>Order History - Pixaura</title>
     <link href="assets/favicon.png" rel="icon" type="image/x-icon"/>
     <link href="CSS/style.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet"/>
@@ -44,26 +44,10 @@
 
     <main>
         <section class="policy-section">
-            <h2>User Profile</h2>
-            <form id="profile-form">
-                <div class="form-group">
-                    <label for="profile-name-input">Full Name</label>
-                    <input type="text" id="profile-name-input" placeholder="Your Full Name" required>
-                </div>
-                <div class="form-group">
-                    <label for="profile-email">Email</label>
-                    <input type="email" id="profile-email" placeholder="Your Email" disabled>
-                </div>
-                <div class="form-group">
-                    <label for="profile-phone">Phone Number</label>
-                    <input type="tel" id="profile-phone" placeholder="Your Phone Number">
-                </div>
-                <div class="form-group">
-                    <label for="profile-address">Shipping Address</label>
-                    <textarea id="profile-address" placeholder="Your Shipping Address" rows="4"></textarea>
-                </div>
-                <button type="submit" class="hero-btn">Save Profile</button>
-            </form>
+            <h2>Order History</h2>
+            <div id="order-history-container">
+                <!-- Orders will be injected here by JavaScript -->
+            </div>
         </section>
     </main>
 
@@ -108,6 +92,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="JS/auth-nav.js"></script>
+    <script src="JS/cart.js"></script>
+    <script src="JS/script.js"></script>
     <script>
         var firebaseConfig = {
             apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
@@ -121,8 +107,6 @@
         var auth = firebase.auth();
         var db = firebase.firestore();
     </script>
-    <script src="JS/cart.js"></script>
-    <script src="JS/profile.js"></script>
-    <script src="JS/script.js"></script>
+    <script src="JS/orders.js"></script>
 </body>
 </html>
