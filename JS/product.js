@@ -9,7 +9,45 @@ const buyFormPopup = document.getElementById("buyFormPopup");
 const profileName = document.getElementById("profile-name");
 
 // State Management
-let products = [];
+let allProducts = [];
+let filteredProducts = [];
+
+// DOM Elements for filtering
+const searchInput = document.getElementById('search-input');
+const categoryFilter = document.getElementById('category-filter');
+
+function populateCategoryFilter() {
+    const categories = [...new Set(allProducts.map(p => p.category))];
+    categories.forEach(category => {
+        if (category) {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            categoryFilter.appendChild(option);
+        }
+    });
+}
+
+function renderFilteredProducts() {
+    productContainer.innerHTML = "";
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedCategory = categoryFilter.value;
+
+    filteredProducts = allProducts.filter(product => {
+        const nameMatch = product.name.toLowerCase().includes(searchTerm);
+        const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
+        return nameMatch && categoryMatch;
+    });
+
+    if (filteredProducts.length === 0) {
+        productContainer.innerHTML = '<div class="no-products">No products match your criteria.</div>';
+        return;
+    }
+
+    filteredProducts.forEach(product => {
+        renderProductCard(product);
+    });
+}
 
 // Initialize cart count on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,6 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.hash === '#buyFormPopup') {
         openBuyForm();
     }
+
+    searchInput.addEventListener('input', renderFilteredProducts);
+    categoryFilter.addEventListener('change', renderFilteredProducts);
 });
 
 // Form Visibility Functions
@@ -81,31 +122,13 @@ async function signup() {
 }
 
 
-function renderProductCard(data) {
-    const imgUrl = Array.isArray(data.image) ? data.image[0] : data.image;
-    const card = document.createElement("div");
-    card.className = "product-card";
-    card.innerHTML = `
-        <a href="product.html?id=${data.id}" class="product-link">
-            <img src="${imgUrl}" alt="${data.name}">
-            <h3>${data.name}</h3>
-            <p class="price">₹${data.price}</p>
-        </a>
-        <button onclick='addToCart(${JSON.stringify(data)})' class="add-to-cart-btn">
-            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-        </button>
-    `;
-    productContainer.appendChild(card);
-}
-
 // Product Functions
 async function loadProducts() {
     try {
         productContainer.innerHTML = '<div class="loading">Loading products...</div>';
         
         const snapshot = await db.collection("products").get();
-        products = [];
-        productContainer.innerHTML = "";
+        allProducts = [];
         
         if (snapshot.empty) {
             productContainer.innerHTML = '<div class="no-products">No products available</div>';
@@ -114,9 +137,12 @@ async function loadProducts() {
 
         snapshot.forEach(doc => {
             const data = { id: doc.id, ...doc.data() };
-            products.push(data);
-            renderProductCard(data);
+            allProducts.push(data);
         });
+
+        populateCategoryFilter();
+        renderFilteredProducts();
+
     } catch (error) {
         showToast("Error loading products: " + error.message, "error");
         productContainer.innerHTML = '<div class="error">Failed to load products</div>';

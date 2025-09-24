@@ -977,7 +977,7 @@ section.featured-section {
     display: flex;
     gap: 16px;
 }
-.product-detail-actions button, .add-to-cart-btn {
+.product-detail-actions button {
     padding: 12px 28px;
     font-size: 1rem;
     border-radius: 6px;
@@ -1266,6 +1266,28 @@ section.featured-section {
 
 .order-items-list li {
     padding: 0.25rem 0;
+}
+
+/* Filter Controls */
+#filter-section {
+    background: transparent;
+    box-shadow: none;
+    padding-top: 0;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.filter-controls input,
+.filter-controls select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
 }
 .product-card {
   background: #fff;

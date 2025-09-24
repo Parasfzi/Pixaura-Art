@@ -88,10 +88,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-    <script src="JS/utils.js"></script>
-    <script src="JS/auth-nav.js"></script>
-    <script src="JS/cart.js"></script>
-    <script src="JS/script.js"></script>
     <script>
         var firebaseConfig = {
             apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
@@ -104,19 +100,20 @@
         firebase.initializeApp(firebaseConfig);
         var auth = firebase.auth();
         var db = firebase.firestore();
-
+    </script>
+    <script src="JS/utils.js"></script>
+    <script src="JS/auth-nav.js"></script>
+    <script src="JS/cart.js"></script>
+    <script src="JS/script.js"></script>
+    <script>
         // Get product id from URL
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
-        let productData = null;
+        var productData = null; // Use var to make it accessible in the global scope of the script
 
         // Toast function
         function showToast(msg, type="success") {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.style.background = type === "error" ? "#e53935" : "#4CAF50";
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
+            window.showToast(msg, type);
         }
 
         // Add to cart
@@ -154,7 +151,7 @@
             else if (typeof data.image === "string") images = [data.image];
 
             let thumbnails = images.map((url, i) =>
-                `<img src="${url}" class="${i===0?'active':''}" onclick="setMainImage('${url.replace(/'/g,"\\\\'")}')">`
+                `<img src="${url}" class="${i===0?'active':''}" onclick="setMainImage(this.src)">`
             ).join('');
 
             document.getElementById('product-detail').innerHTML = `
@@ -167,13 +164,17 @@
                     <div class="product-detail-price">₹${data.price}</div>
                     <div class="product-detail-desc">${data.description || ""}</div>
                     <div class="product-detail-actions">
-                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
-                        <button class="buy-now-btn" onclick="buyNow()">Buy Now</button>
+                        <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()" disabled>Add to Cart</button>
+                        <button id="buy-now-btn" class="buy-now-btn" onclick="buyNow()" disabled>Buy Now</button>
                     </div>
                 </div>
             `;
             // Expose setMainImage to global for inline onclick
             window.setMainImage = setMainImage;
+
+            // Enable buttons now that productData is loaded
+            document.getElementById('add-to-cart-btn').disabled = false;
+            document.getElementById('buy-now-btn').disabled = false;
         }).catch(() => {
             document.getElementById('product-detail').innerHTML = "Error loading product!";
         });
