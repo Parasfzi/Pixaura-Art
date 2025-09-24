@@ -24,19 +24,33 @@ window.showCart = function() {
         cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
         cartTotal.innerHTML = '';
     } else {
-        const total = cart.reduce((sum, item) => sum + item.price, 0);
-        cartItems.innerHTML = cart.map((item, index) => `
-            <div class="cart-item">
-                <img src="${Array.isArray(item.image) ? item.image[0] : item.image}" alt="${item.name}" onerror="this.src='assets/placeholder.png'">
-                <div class="item-details">
-                    <h4>${item.name}</h4>
-                    <p>₹${item.price.toFixed(2)}</p>
+        // FIX #3: Make the reduce function safer
+        const total = cart.reduce((sum, item) => {
+            // Only add the price if the item and its price exist
+            if (item && typeof item.price === 'number') {
+                return sum + item.price;
+            }
+            return sum; // Otherwise, just return the current sum
+        }, 0);
+
+        cartItems.innerHTML = cart.map((item, index) => {
+            // Add a check for null items before trying to render them
+            if (!item) return ''; 
+
+            return `
+                <div class="cart-item">
+                    <img src="${Array.isArray(item.image) ? item.image[0] : item.image}" alt="${item.name}" onerror="this.src='assets/placeholder.png'">
+                    <div class="item-details">
+                        <h4>${item.name}</h4>
+                        <p>₹${item.price.toFixed(2)}</p>
+                    </div>
+                    <button onclick="window.removeFromCart(${index})" class="remove-btn">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </div>
-                <button onclick="window.removeFromCart(${index})" class="remove-btn">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </div>
-        `).join('');
+            `;
+        }).join('');
+        
         cartTotal.innerHTML = `
             <h3>Total: ₹${total.toFixed(2)}</h3>
             <p class="item-count">${cart.length} item${cart.length !== 1 ? 's' : ''}</p>

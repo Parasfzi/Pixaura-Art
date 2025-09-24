@@ -1,4 +1,3 @@
-
 // DOM Elements
 const loginForm = document.getElementById("login-form");
 const signupForm = document.getElementById("signup-form");
@@ -152,7 +151,8 @@ async function loadProducts() {
 }
 
 function renderProductCard(data) {
-    const imgUrl = Array.isArray(data.image) ? data.image[0] : data.image;
+    // FIX #2: Use the product image OR a placeholder if it doesn't exist
+    const imgUrl = (Array.isArray(data.image) ? data.image[0] : data.image) || 'assets/placeholder.png';
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
@@ -241,17 +241,25 @@ auth.onAuthStateChanged(user => {
         authSection.classList.add("hidden");
         productsSection.classList.remove("hidden");
         loadProducts();
-        // Show user name in navbar
-        profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
-        profileName.style.display = "inline-block";
+        
+        // FIX #1: Add a check to see if the element exists
+        if (profileName) {
+            profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
+            profileName.style.display = "inline-block";
+        }
+
     } else {
         authSection.classList.remove("hidden");
         productsSection.classList.add("hidden");
         cart = [];
         localStorage.removeItem('cart');
         updateCartCount();
-        profileName.textContent = '';
-        profileName.style.display = "none";
+        
+        // FIX #1: Add a check here as well
+        if (profileName) {
+            profileName.textContent = '';
+            profileName.style.display = "none";
+        }
     }
 });
 
@@ -265,5 +273,3 @@ function googleLogin() {
             showToast(error.message, "error");
         });
 }
-
-
