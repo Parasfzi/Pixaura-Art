@@ -159,11 +159,6 @@
                 document.getElementById('product-detail').innerHTML = "<h1>Error loading product!</h1>";
             });
         }
-        
-        // --- START OF FIX ---
-        // The local showToast function has been REMOVED.
-        // The functions below now correctly call the global window.showToast from utils.js
-        // --- END OF FIX ---
 
         function addToCart() {
             if (productData) {
@@ -172,15 +167,21 @@
                 window.showToast("Product data not loaded yet.", "error");
             }
         }
-
+        
+        // --- START OF FIX ---
         function buyNow() {
             if (productData) {
-                addToCart(); // This already calls window.addToCart
-                window.location.href = "products.html#buyFormPopup";
+                addToCart(); // This calls window.addToCart and shows the toast
+                
+                // Wait a moment for localStorage to save before redirecting
+                setTimeout(() => {
+                    window.location.href = "products.html#buyFormPopup";
+                }, 300); // 300ms is a safe and imperceptible delay
             } else {
                 window.showToast("Product data not loaded yet.", "error");
             }
         }
+        // --- END OF FIX ---
 
         function setMainImage(url) {
             const mainImg = document.getElementById('main-product-img');
