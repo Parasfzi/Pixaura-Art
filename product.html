@@ -9,7 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 </head>
 <body class="animated-gradient-bg">
-    <!-- Navigation -->
     <nav>
         <div class="logo">
             <a href="index.html"><img alt="Pixaura Logo" loading="lazy" src="assets/logo.png"/></a>
@@ -45,13 +44,13 @@
 
     <main>
         <section class="policy-section">
-            <div id="product-detail"></div>
+            <div id="product-detail">
+                </div>
         </section>
     </main>
 
     <div id="toast" class="toast"></div>
 
-    <!-- Cart Modal -->
     <div id="cart-modal" class="modal hidden">
         <div class="modal-content">
             <h2>Your Cart <i class="fa-solid fa-cart-shopping"></i></h2>
@@ -64,7 +63,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
       <div class="footer-logo">
         <img src="assets/logo.png" alt="Pixaura Logo" />
@@ -106,79 +104,102 @@
     <script src="JS/auth-nav.js"></script>
     <script src="JS/cart.js"></script>
     <script src="JS/script.js"></script>
+
     <script>
         // Get product id from URL
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
         var productData = null; // Use var to make it accessible in the global scope of the script
 
+        // Check if a productId exists in the URL
+        if (!productId) {
+            // If no ID, show a message and a link back to the products page
+            document.getElementById('product-detail').innerHTML = `
+                <div style="text-align: center; padding: 50px; color: white;">
+                    <h2>No Product Selected</h2>
+                    <p>Please select a product from our creations page to see its details.</p>
+                    <a href="products.html" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background: #ff7e5f; color: white; text-decoration: none; border-radius: 5px;">View Products</a>
+                </div>
+            `;
+        } else {
+            // If an ID exists, fetch and display the product
+            db.collection("products").doc(productId).get().then(doc => {
+                if (!doc.exists) {
+                    document.getElementById('product-detail').innerHTML = "<h1>Product not found!</h1>";
+                    return;
+                }
+                const data = doc.data();
+                productData = { ...data, id: productId }; // for cart
+
+                // Images array support
+                let images = [];
+                if (Array.isArray(data.image)) images = data.image;
+                else if (Array.isArray(data.images)) images = data.images;
+                else if (typeof data.image === "string") images = [data.image];
+
+                let thumbnails = images.map((url, i) =>
+                    `<img src="${url}" alt="thumbnail ${i+1}" class="${i===0?'active':''}" onclick="setMainImage(this.src)">`
+                ).join('');
+
+                document.getElementById('product-detail').innerHTML = `
+                    <div class="product-detail-container">
+                        <div class="product-images-main">
+                            <img id="main-product-img" src="${images[0] || 'assets/placeholder.png'}" alt="${data.name}">
+                        </div>
+                        <div class="product-thumbnails">${thumbnails}</div>
+                        <div class="product-detail-title">${data.name}</div>
+                        <div class="product-detail-price">₹${data.price}</div>
+                        <div class="product-detail-desc">${data.description || ""}</div>
+                        <div class="product-detail-actions">
+                            <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                            <button id="buy-now-btn" class="buy-now-btn" onclick="buyNow()">Buy Now</button>
+                        </div>
+                    </div>
+                `;
+
+            }).catch((error) => {
+                console.error("Error loading product:", error);
+                document.getElementById('product-detail').innerHTML = "<h1>Error loading product!</h1>";
+            });
+        }
+
+        // --- Utility Functions ---
+
         // Toast function
-        function showToast(msg, type="success") {
+        function showToast(msg, type = "success") {
             window.showToast(msg, type);
         }
 
         // Add to cart
         function addToCart() {
-            window.addToCart(productData);
+            if (productData) {
+                window.addToCart(productData);
+            } else {
+                showToast("Product data not loaded yet.", "error");
+            }
         }
 
         // Buy now
         function buyNow() {
-            addToCart();
-            window.location.href = "products.html#buyFormPopup";
+            if (productData) {
+                addToCart();
+                window.location.href = "products.html#buyFormPopup";
+            } else {
+                showToast("Product data not loaded yet.", "error");
+            }
         }
 
-        // Image slider logic
+        // Image slider logic - must be globally accessible for onclick
         function setMainImage(url) {
-            document.getElementById('main-product-img').src = url;
+            const mainImg = document.getElementById('main-product-img');
+            if (mainImg) {
+                mainImg.src = url;
+            }
             document.querySelectorAll('.product-thumbnails img').forEach(img => {
+                // Using a simple equality check is fine if URLs are identical
                 img.classList.toggle('active', img.src === url);
             });
         }
-
-        // Fetch and show product
-        db.collection("products").doc(productId).get().then(doc => {
-            if (!doc.exists) {
-                document.getElementById('product-detail').innerHTML = "Product not found!";
-                return;
-            }
-            const data = doc.data();
-            productData = { ...data, id: productId }; // for cart
-
-            // Images array support
-            let images = [];
-            if (Array.isArray(data.image)) images = data.image;
-            else if (Array.isArray(data.images)) images = data.images;
-            else if (typeof data.image === "string") images = [data.image];
-
-            let thumbnails = images.map((url, i) =>
-                `<img src="${url}" class="${i===0?'active':''}" onclick="setMainImage(this.src)">`
-            ).join('');
-
-            document.getElementById('product-detail').innerHTML = `
-                <div class="product-detail-container">
-                    <div class="product-images-main">
-                        <img id="main-product-img" src="${images[0] || ''}" alt="${data.name}">
-                    </div>
-                    <div class="product-thumbnails">${thumbnails}</div>
-                    <div class="product-detail-title">${data.name}</div>
-                    <div class="product-detail-price">₹${data.price}</div>
-                    <div class="product-detail-desc">${data.description || ""}</div>
-                    <div class="product-detail-actions">
-                        <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()" disabled>Add to Cart</button>
-                        <button id="buy-now-btn" class="buy-now-btn" onclick="buyNow()" disabled>Buy Now</button>
-                    </div>
-                </div>
-            `;
-            // Expose setMainImage to global for inline onclick
-            window.setMainImage = setMainImage;
-
-            // Enable buttons now that productData is loaded
-            document.getElementById('add-to-cart-btn').disabled = false;
-            document.getElementById('buy-now-btn').disabled = false;
-        }).catch(() => {
-            document.getElementById('product-detail').innerHTML = "Error loading product!";
-        });
     </script>
 </body>
 </html>
