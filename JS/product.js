@@ -244,10 +244,6 @@ auth.onAuthStateChanged(user => {
         // Show user name in navbar
         profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
         profileName.style.display = "inline-block";
-        if (profileName) {
-            profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
-            profileName.style.display = "inline-block";
-        }
     } else {
         authSection.classList.remove("hidden");
         productsSection.classList.add("hidden");
@@ -256,10 +252,6 @@ auth.onAuthStateChanged(user => {
         updateCartCount();
         profileName.textContent = '';
         profileName.style.display = "none";
-        if (profileName) {
-            profileName.textContent = '';
-            profileName.style.display = "none";
-        }
     }
 });
 
