@@ -88,6 +88,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    
     <script>
         var firebaseConfig = {
             apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
@@ -101,16 +102,55 @@
         var auth = firebase.auth();
         var db = firebase.firestore();
     </script>
+    
     <script src="JS/utils.js"></script>
     <script src="JS/auth-nav.js"></script>
     <script src="JS/cart.js"></script>
     <script src="JS/script.js"></script>
 
     <script>
-        // Get product id from URL
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
-        var productData = null; 
+        var productData = null;
+
+        function formatDescription(text) {
+            if (!text) return "";
+            const standardizedText = text.replace(/\s*\/\s*n\s*/g, '\n');
+            const lines = standardizedText.split('\n');
+            let html = '';
+            let inList = false;
+
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                
+                if (trimmedLine.startsWith('-')) {
+                    if (!inList) {
+                        html += '<ul>';
+                        inList = true;
+                    }
+                    html += `<li>${trimmedLine.substring(1).trim()}</li>`;
+                } else {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+
+                    if (trimmedLine.startsWith('#')) {
+                        html += `<p>${trimmedLine.substring(1).trim()}</p>`;
+                    } else if (trimmedLine.toUpperCase() === "BELIEVE OR NOT, IT'S THE BEST EVER FORMAL COLLECTION") {
+                        html += `<h4>${trimmedLine}</h4>`;
+                    } else if (trimmedLine) {
+                        html += `<p>${trimmedLine}</p>`;
+                    }
+                }
+            });
+
+            if (inList) {
+                html += '</ul>';
+            }
+
+            return html;
+        }
 
         if (!productId) {
             document.getElementById('product-detail').innerHTML = `
@@ -127,7 +167,9 @@
                     return;
                 }
                 const data = doc.data();
-                productData = { ...data, id: productId }; 
+                productData = { ...data, id: productId };
+
+                const formattedDescription = formatDescription(data.description || "");
 
                 let images = [];
                 if (Array.isArray(data.image)) images = data.image;
@@ -146,20 +188,19 @@
                         <div class="product-thumbnails">${thumbnails}</div>
                         <div class="product-detail-title">${data.name}</div>
                         <div class="product-detail-price">₹${data.price}</div>
-                        <div class="product-detail-desc">${data.description || ""}</div>
+                        <div class="product-detail-desc">${formattedDescription}</div> 
                         <div class="product-detail-actions">
                             <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
                             <button id="buy-now-btn" class="buy-now-btn" onclick="buyNow()">Buy Now</button>
                         </div>
                     </div>
                 `;
-
             }).catch((error) => {
                 console.error("Error loading product:", error);
                 document.getElementById('product-detail').innerHTML = "<h1>Error loading product!</h1>";
             });
         }
-
+        
         function addToCart() {
             if (productData) {
                 window.addToCart(productData);
@@ -168,20 +209,16 @@
             }
         }
         
-        // --- START OF FIX ---
         function buyNow() {
             if (productData) {
-                addToCart(); // This calls window.addToCart and shows the toast
-                
-                // Wait a moment for localStorage to save before redirecting
+                addToCart();
                 setTimeout(() => {
                     window.location.href = "products.html#buyFormPopup";
-                }, 300); // 300ms is a safe and imperceptible delay
+                }, 300);
             } else {
                 window.showToast("Product data not loaded yet.", "error");
             }
         }
-        // --- END OF FIX ---
 
         function setMainImage(url) {
             const mainImg = document.getElementById('main-product-img');
