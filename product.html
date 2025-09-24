@@ -110,11 +110,9 @@
         // Get product id from URL
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
-        var productData = null; // Use var to make it accessible in the global scope of the script
+        var productData = null; 
 
-        // Check if a productId exists in the URL
         if (!productId) {
-            // If no ID, show a message and a link back to the products page
             document.getElementById('product-detail').innerHTML = `
                 <div style="text-align: center; padding: 50px; color: white;">
                     <h2>No Product Selected</h2>
@@ -123,16 +121,14 @@
                 </div>
             `;
         } else {
-            // If an ID exists, fetch and display the product
             db.collection("products").doc(productId).get().then(doc => {
                 if (!doc.exists) {
                     document.getElementById('product-detail').innerHTML = "<h1>Product not found!</h1>";
                     return;
                 }
                 const data = doc.data();
-                productData = { ...data, id: productId }; // for cart
+                productData = { ...data, id: productId }; 
 
-                // Images array support
                 let images = [];
                 if (Array.isArray(data.image)) images = data.image;
                 else if (Array.isArray(data.images)) images = data.images;
@@ -163,41 +159,35 @@
                 document.getElementById('product-detail').innerHTML = "<h1>Error loading product!</h1>";
             });
         }
+        
+        // --- START OF FIX ---
+        // The local showToast function has been REMOVED.
+        // The functions below now correctly call the global window.showToast from utils.js
+        // --- END OF FIX ---
 
-        // --- Utility Functions ---
-
-        // Toast function
-        function showToast(msg, type = "success") {
-            window.showToast(msg, type);
-        }
-
-        // Add to cart
         function addToCart() {
             if (productData) {
                 window.addToCart(productData);
             } else {
-                showToast("Product data not loaded yet.", "error");
+                window.showToast("Product data not loaded yet.", "error");
             }
         }
 
-        // Buy now
         function buyNow() {
             if (productData) {
-                addToCart();
+                addToCart(); // This already calls window.addToCart
                 window.location.href = "products.html#buyFormPopup";
             } else {
-                showToast("Product data not loaded yet.", "error");
+                window.showToast("Product data not loaded yet.", "error");
             }
         }
 
-        // Image slider logic - must be globally accessible for onclick
         function setMainImage(url) {
             const mainImg = document.getElementById('main-product-img');
             if (mainImg) {
                 mainImg.src = url;
             }
             document.querySelectorAll('.product-thumbnails img').forEach(img => {
-                // Using a simple equality check is fine if URLs are identical
                 img.classList.toggle('active', img.src === url);
             });
         }
