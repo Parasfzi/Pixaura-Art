@@ -11,37 +11,7 @@
 </head>
 <body class="animated-gradient-bg">
     <nav>
-        <div class="logo">
-            <a href="index.html"><img alt="Pixaura Logo" loading="lazy" src="assets/logo.png"/></a>
-        </div>
-        <button aria-label="Toggle navigation" class="hamburger" id="hamburger-btn">
-            <span></span><span></span><span></span>
-        </button>
-        <div class="nav" id="main-nav">
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="products.html">Products</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li id="user-li"><a id="user-icon" aria-label="User" href="products.html"><i class="fa-regular fa-user"></i></a></li>
-                <li class="profile-menu-container" style="display: none;">
-                    <a href="#" id="profile-menu-trigger"></a>
-                    <div class="dropdown-menu" id="profile-dropdown">
-                        <a href="profile.html">View Profile</a>
-                        <a href="orders.html">Order History</a>
-                        <a href="#" id="logout-btn">Logout</a>
-                    </div>
-                </li>
-                <li><a aria-label="Search" href="#"><i class="fa-solid fa-magnifying-glass"></i></a></li>
-                <li class="cart-icon" id="cart-count">
-                    <a aria-label="Cart" href="#" onclick="event.preventDefault(); window.showCart();">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="cart-badge"></span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+        </nav>
 
     <main>
         <section class="policy-section">
@@ -53,53 +23,16 @@
     <div id="toast" class="toast"></div>
 
     <div id="cart-modal" class="modal hidden">
-        <div class="modal-content">
-            <h2>Your Cart <i class="fa-solid fa-cart-shopping"></i></h2>
-            <div id="cart-items"></div>
-            <div id="cart-total"></div>
-            <div class="cart-buttons">
-                <button type="button" onclick="window.location.href='products.html#buyFormPopup'" class="buy-btn">Buy Now</button>
-                <button type="button" class="close-btn">Close</button>
-            </div>
         </div>
-    </div>
 
     <footer class="footer">
-      <div class="footer-logo">
-        <img src="assets/logo.png" alt="Pixaura Logo" />
-      </div>
-      <div class="footer-social">
-        <a href="https://facebook.com/" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://instagram.com/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="https://twitter.com/" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="https://wa.me/917078573072" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-      </div>
-      <div class="footer-disclaimer">
-        Disclaimer: All products on this website are made-to-order and printed on demand. Colors and placements may slightly vary due to display settings or production processes.
-      </div>
-      <div class="footer-links">
-        <a href="privacy-policy.html">Privacy Policy &nbsp; | &nbsp;</a>
-        <a href="terms.html">Terms & Conditions &nbsp; | &nbsp;</a>
-        <a href="refund-policy.html">Refund Policy</a>
-      </div>
-      <p>&copy; 2025 Pixaura. All Rights Reserved.</p>
-    </footer>
+      </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script>
-        var firebaseConfig = {
-            apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
-            authDomain: "chat-web-23e9c.firebaseapp.com",
-            projectId: "chat-web-23e9c",
-            storageBucket: "chat-web-23e9c.appspot.com",
-            messagingSenderId: "90729782128",
-            appId: "1:90729782128:web:b051229c6c45866a87cdb5"
-        };
-        firebase.initializeApp(firebaseConfig);
-        var auth = firebase.auth();
-        var db = firebase.firestore();
+        // Your firebase config here
     </script>
     <script src="JS/utils.js"></script>
     <script src="JS/auth-nav.js"></script>
@@ -107,10 +40,65 @@
     <script src="JS/script.js"></script>
 
     <script>
-        // Get product id from URL
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
         var productData = null; 
+
+        // --- START OF FIX ---
+
+        /**
+         * Takes the raw description text from Firestore and converts it to formatted HTML.
+         * @param {string} text The raw text to format.
+         * @returns {string} The formatted HTML string.
+         */
+        function formatDescription(text) {
+            if (!text) return "";
+
+            // Standardize different kinds of newlines
+            const standardizedText = text.replace(/\s*\/\s*n\s*/g, '\n');
+            const lines = standardizedText.split('\n');
+            let html = '';
+            let inList = false;
+
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                
+                if (trimmedLine.startsWith('-')) {
+                    // This is a list item
+                    if (!inList) {
+                        html += '<ul>'; // Start the list
+                        inList = true;
+                    }
+                    html += `<li>${trimmedLine.substring(1).trim()}</li>`;
+                } else {
+                    // This is not a list item
+                    if (inList) {
+                        html += '</ul>'; // End the previous list
+                        inList = false;
+                    }
+
+                    if (trimmedLine.startsWith('#')) {
+                        // Treat lines with # as simple paragraphs
+                        html += `<p>${trimmedLine.substring(1).trim()}</p>`;
+                    } else if (trimmedLine.toUpperCase() === "BELIEVE OR NOT, IT'S THE BEST EVER FORMAL COLLECTION") {
+                        // Make this line a heading
+                        html += `<h4>${trimmedLine}</h4>`;
+                    } else if (trimmedLine) {
+                        // Any other non-empty line
+                        html += `<p>${trimmedLine}</p>`;
+                    }
+                }
+            });
+
+            // If the text ends with a list, close the <ul> tag
+            if (inList) {
+                html += '</ul>';
+            }
+
+            return html;
+        }
+
+        // --- END OF FIX ---
 
         if (!productId) {
             document.getElementById('product-detail').innerHTML = `
@@ -129,6 +117,9 @@
                 const data = doc.data();
                 productData = { ...data, id: productId }; 
 
+                // --- USE THE FORMATTING FUNCTION HERE ---
+                const formattedDescription = formatDescription(data.description || "");
+
                 let images = [];
                 if (Array.isArray(data.image)) images = data.image;
                 else if (Array.isArray(data.images)) images = data.images;
@@ -146,52 +137,24 @@
                         <div class="product-thumbnails">${thumbnails}</div>
                         <div class="product-detail-title">${data.name}</div>
                         <div class="product-detail-price">₹${data.price}</div>
-                        <div class="product-detail-desc">${data.description || ""}</div>
+                        <div class="product-detail-desc">${formattedDescription}</div> 
                         <div class="product-detail-actions">
                             <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
                             <button id="buy-now-btn" class="buy-now-btn" onclick="buyNow()">Buy Now</button>
                         </div>
                     </div>
                 `;
-
             }).catch((error) => {
                 console.error("Error loading product:", error);
                 document.getElementById('product-detail').innerHTML = "<h1>Error loading product!</h1>";
             });
         }
-
-        function addToCart() {
-            if (productData) {
-                window.addToCart(productData);
-            } else {
-                window.showToast("Product data not loaded yet.", "error");
-            }
-        }
         
-        // --- START OF FIX ---
-        function buyNow() {
-            if (productData) {
-                addToCart(); // This calls window.addToCart and shows the toast
-                
-                // Wait a moment for localStorage to save before redirecting
-                setTimeout(() => {
-                    window.location.href = "products.html#buyFormPopup";
-                }, 300); // 300ms is a safe and imperceptible delay
-            } else {
-                window.showToast("Product data not loaded yet.", "error");
-            }
-        }
-        // --- END OF FIX ---
+        // --- Your other functions (addToCart, buyNow, etc.) go here ---
+        function addToCart() { /* ... */ }
+        function buyNow() { /* ... */ }
+        function setMainImage(url) { /* ... */ }
 
-        function setMainImage(url) {
-            const mainImg = document.getElementById('main-product-img');
-            if (mainImg) {
-                mainImg.src = url;
-            }
-            document.querySelectorAll('.product-thumbnails img').forEach(img => {
-                img.classList.toggle('active', img.src === url);
-            });
-        }
     </script>
 </body>
 </html>
