@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.updateCartCount = function() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        if(cartCountEl){
+        if (cartCountEl) {
             const badge = cartCountEl.querySelector(".cart-badge");
-            if(badge){
+            if (badge) {
                 badge.textContent = cart.length;
                 badge.style.display = cart.length ? 'block' : 'none';
             }
@@ -29,15 +29,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Add event listener for close button inside the cart modal
     const closeBtn = document.querySelector("#cart-modal .close-btn");
-    if(closeBtn) closeBtn.addEventListener('click', window.closeCart);
+    if (closeBtn) closeBtn.addEventListener('click', window.closeCart);
 
     window.addToCart = (product) => {
+        // --- START OF FIX ---
+        // Check if the product object is valid before proceeding
+        if (!product || typeof product.name === 'undefined') {
+            console.error("addToCart was called with an invalid product object.", product);
+            window.showToast("Could not add item to cart.", "error");
+            return;
+        }
+        // --- END OF FIX ---
+
         if (!auth.currentUser) {
             window.showToast("Please login to add items to cart", "error");
             return;
         }
+
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         cart.push(product);
         localStorage.setItem('cart', JSON.stringify(cart));
