@@ -237,9 +237,11 @@ async function submitOrder(e) {
 auth.onAuthStateChanged(user => {
     const authSection = document.getElementById('auth-section');
     const productsSection = document.getElementById('products-section');
+    const filterSection = document.getElementById('filter-section');
     if (user) {
         authSection.classList.add("hidden");
         productsSection.classList.remove("hidden");
+        filterSection.style.display = 'block';
         loadProducts();
         
         // FIX #1: Add a check to see if the element exists
@@ -251,6 +253,7 @@ auth.onAuthStateChanged(user => {
     } else {
         authSection.classList.remove("hidden");
         productsSection.classList.add("hidden");
+        filterSection.style.display = 'none';
         cart = [];
         localStorage.removeItem('cart');
         updateCartCount();

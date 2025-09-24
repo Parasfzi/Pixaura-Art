@@ -1289,6 +1289,13 @@ section.featured-section {
     border-radius: 6px;
     font-size: 1rem;
 }
+
+#filter-section {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
 .product-card {
   background: #fff;
   border-radius: 16px;
