@@ -120,15 +120,7 @@
 
         // Add to cart
         function addToCart() {
-            if (!auth.currentUser) {
-                showToast("Please login to add items to cart", "error");
-                return;
-            }
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            cart.push(productData);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            showToast("Added to cart!");
-            window.updateCartCount();
+            window.addToCart(productData);
         }
 
         // Buy now

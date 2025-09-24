@@ -9,7 +9,6 @@ const buyFormPopup = document.getElementById("buyFormPopup");
 const profileName = document.getElementById("profile-name");
 
 // State Management
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let products = [];
 
 // Initialize cart count on page load
@@ -81,17 +80,6 @@ async function signup() {
     }
 }
 
-async function logout() {
-    try {
-        await auth.signOut();
-        showToast("Logged out successfully!", "success");
-        cart = [];
-        localStorage.removeItem('cart');
-        updateCartCount();
-    } catch (err) {
-        showToast("Error logging out: " + err.message, "error");
-    }
-}
 
 function renderProductCard(data) {
     const imgUrl = Array.isArray(data.image) ? data.image[0] : data.image;
@@ -154,15 +142,7 @@ function renderProductCard(data) {
 
 // Cart Functions
 function addToCart(product) {
-    if (!auth.currentUser) {
-        showToast("Please login to add items to cart", "error");
-        return;
-    }
-    
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push(product);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    window.updateCartCount();
+    window.addToCart(product);
     showToast("Added to cart!", "success");
 }
 
@@ -174,14 +154,12 @@ function closeBuyForm() {
     document.getElementById("buyFormPopup").classList.add("hidden");
 }
 
-function saveCartToLocalStorage() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
 // Order Functions
 async function submitOrder(e) {
     e.preventDefault();
     
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
     if (!auth.currentUser) {
         showToast("Please login to place an order", "error");
         return;
@@ -215,11 +193,11 @@ async function submitOrder(e) {
 
         await db.collection("orders").add(orderData);
         showToast("Order placed successfully!", "success");
-        cart = [];
         localStorage.removeItem('cart');
-        updateCartCount();
+        window.updateCartCount();
         closeBuyForm();
-        closeCart();
+        const cartModal = document.getElementById("cart-modal");
+        if(cartModal) cartModal.classList.add("hidden");
         clearFormInputs(document.getElementById("orderForm"));
     } catch (error) {
         showToast("Error placing order: " + error.message, "error");

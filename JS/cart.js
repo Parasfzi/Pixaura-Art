@@ -68,6 +68,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.querySelector("#cart-modal .close-btn");
     if(closeBtn) closeBtn.addEventListener('click', closeCart);
 
+    window.addToCart = (product) => {
+        if (!auth.currentUser) {
+            alert("Please login to add items to cart"); // Using alert as toast is not defined here
+            return;
+        }
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart.push(product);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.updateCartCount();
+        // A simple confirmation, since toast is defined elsewhere
+        alert(`${product.name} has been added to your cart!`);
+    };
+
     // Initial cart count update
-    updateCartCount();
+    window.updateCartCount();
 });
