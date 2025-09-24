@@ -40,6 +40,7 @@
         "description": "Pixaura is a creative brand that designs and prints original artwork on quality products like apparel, mugs, and phone cases."
       }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-9BFTM8267Q"></script>
@@ -65,13 +66,21 @@
 <li><a href="products.html">Products</a></li>
 <li><a href="about.html">About</a></li>
 <li><a href="contact.html">Contact</a></li>
-<li><a aria-label="User" href="#"><i class="fa-regular fa-user"></i></a></li>
+<li id="user-li"><a id="user-icon" aria-label="User" href="products.html"><i class="fa-regular fa-user"></i></a></li>
+<li class="profile-menu-container" style="display: none;">
+    <a href="#" id="profile-menu-trigger"></a>
+    <div class="dropdown-menu" id="profile-dropdown">
+        <a href="profile.html">View Profile</a>
+        <a href="orders.html">Order History</a>
+        <a href="#" id="logout-btn">Logout</a>
+    </div>
+</li>
 <li><a aria-label="Search" href="#"><i class="fa-solid fa-magnifying-glass"></i></a></li>
-<li class="cart-icon">
-<a aria-label="Cart" href="#">
-<i class="fa-solid fa-cart-shopping"></i>
-<span class="cart-badge"></span>
-</a>
+<li class="cart-icon" id="cart-count">
+    <a aria-label="Cart" href="#" onclick="event.preventDefault(); window.showCart();">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-badge"></span>
+    </a>
 </li>
 </ul>
 </div>
@@ -160,6 +169,19 @@
 <a class="whatsapp-float" href="https://wa.me/917078573072" rel="noopener" target="_blank">
 <img alt="WhatsApp Chat" loading="lazy" src="assets/whatsapp.png"/>
 </a>
+<!-- Cart Modal -->
+<div id="cart-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Your Cart <i class="fa-solid fa-cart-shopping"></i></h2>
+        <div id="cart-items"></div>
+        <div id="cart-total"></div>
+        <div class="cart-buttons">
+            <button type="button" onclick="openBuyForm()" class="buy-btn">Buy Now</button>
+            <button type="button" class="close-btn">Close</button>
+        </div>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer class="footer">
       <div class="footer-logo">
@@ -184,6 +206,23 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
+        authDomain: "chat-web-23e9c.firebaseapp.com",
+        projectId: "chat-web-23e9c",
+        storageBucket: "chat-web-23e9c.appspot.com",
+        messagingSenderId: "90729782128",
+        appId: "1:90729782128:web:b051229c6c45866a87cdb5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+</script>
+<script src="JS/utils.js"></script>
+<script src="JS/auth-nav.js"></script>
+<script src="JS/cart.js"></script>
 <script src="JS/script.js"></script>
 </body>
 </html>

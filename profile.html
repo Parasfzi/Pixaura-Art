@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products - Pixaura</title>
+    <title>User Profile - Pixaura</title>
     <link href="assets/favicon.png" rel="icon" type="image/x-icon"/>
     <link href="CSS/style.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet"/>
@@ -45,47 +44,31 @@
     </nav>
 
     <main>
-        <!-- Login/Signup Forms -->
-        <section class="policy-section" id="auth-section">
-            <div id="login-form" class="login-form">
-                <h2>Login to Pixaura</h2>
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="password" id="password" placeholder="Password" required>
-                <button onclick="login()" class="login-btn">Login</button>
-                <button type="button" onclick="googleLogin()" class="login-btn" style="background:#4285F4;margin-top:10px;">
-                    <i class="fa-brands fa-google"></i> Login with Google
-                </button>
-                <p>Don't have an account? <button type="button" onclick="showSignup()" class="link-btn">Sign up</button></p>
-            </div>
-
-            <div id="signup-form" class="login-form hidden">
-                <h2>Create Account</h2>
-                <input type="text" id="signup-name" placeholder="Full Name" required>
-                <input type="email" id="signup-email" placeholder="Email" required>
-                <input type="password" id="signup-password" placeholder="Password" required>
-                <button onclick="signup()" class="signup-btn">Sign Up</button>
-                <p>Already have an account? <button type="button" onclick="showLogin()" class="link-btn">Login</button></p>
-            </div>
-        </section>
-
-        <!-- Search and Filter Controls -->
-        <section class="policy-section" id="filter-section">
-            <div class="filter-controls">
-                <input type="text" id="search-input" placeholder="Search for products...">
-                <select id="category-filter">
-                    <option value="all">All Categories</option>
-                </select>
-            </div>
-        </section>
-
-        <!-- Products Grid -->
-        <section class="featured-section animated-gradient-bg hidden" id="products-section">
-            <h2><i class="fa-solid fa-star"></i> Our Creations</h2>
-            <div id="product-container" class="featured-flex">
-                <!-- Products will be injected here by JavaScript -->
-            </div>
+        <section class="policy-section">
+            <h2>User Profile</h2>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="profile-name-input">Full Name</label>
+                    <input type="text" id="profile-name-input" placeholder="Your Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-email">Email</label>
+                    <input type="email" id="profile-email" placeholder="Your Email" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="profile-phone">Phone Number</label>
+                    <input type="tel" id="profile-phone" placeholder="Your Phone Number">
+                </div>
+                <div class="form-group">
+                    <label for="profile-address">Shipping Address</label>
+                    <textarea id="profile-address" placeholder="Your Shipping Address" rows="4"></textarea>
+                </div>
+                <button type="submit" class="hero-btn">Save Profile</button>
+            </form>
         </section>
     </main>
+
+    <div id="toast" class="toast"></div>
 
     <!-- Cart Modal -->
     <div id="cart-modal" class="modal hidden">
@@ -94,28 +77,9 @@
             <div id="cart-items"></div>
             <div id="cart-total"></div>
             <div class="cart-buttons">
-                <button type="button" onclick="openBuyForm()" class="buy-btn">Buy Now</button>
-                <button type="button" onclick="closeCart()" class="close-btn">Close</button>
+                <button type="button" onclick="window.location.href='products.html#buyFormPopup'" class="buy-btn">Buy Now</button>
+                <button type="button" class="close-btn">Close</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Buy Form Modal -->
-    <div id="buyFormPopup" class="modal hidden">
-        <div class="modal-content">
-            <h3>Enter Shipping Details</h3>
-            <form id="orderForm">
-                <input type="text" id="fullName" placeholder="Full Name" required>
-                <input type="text" id="address" placeholder="Address" required>
-                <input type="text" id="city" placeholder="City" required>
-                <input type="text" id="state" placeholder="State" required>
-                <input type="text" id="pincode" placeholder="Pincode" required>
-                <input type="tel" id="phone" placeholder="Phone Number" required>
-                <div class="form-buttons">
-                    <button type="submit" class="submit-btn">Place Order</button>
-                    <button type="button" onclick="closeBuyForm()" class="close-btn">Cancel</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -160,7 +124,7 @@
     <script src="JS/utils.js"></script>
     <script src="JS/auth-nav.js"></script>
     <script src="JS/cart.js"></script>
-    <script src="JS/product.js"></script>
+    <script src="JS/profile.js"></script>
     <script src="JS/script.js"></script>
 </body>
 </html>

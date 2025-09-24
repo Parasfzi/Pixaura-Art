@@ -1,45 +1,78 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyDvuETPdTeZsDasgOw7MW59IrsmeOQP7kk",
-    authDomain: "chat-web-23e9c.firebaseapp.com",
-    projectId: "chat-web-23e9c",
-    storageBucket: "chat-web-23e9c.appspot.com",
-    messagingSenderId: "90729782128",
-    appId: "1:90729782128:web:b051229c6c45866a87cdb5"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
 // DOM Elements
 const loginForm = document.getElementById("login-form");
 const signupForm = document.getElementById("signup-form");
 const productContainer = document.getElementById("product-container");
 const cartModal = document.getElementById("cart-modal");
-const cartCount = document.getElementById("cart-count");
 const buyFormPopup = document.getElementById("buyFormPopup");
 const profileName = document.getElementById("profile-name");
 
 // State Management
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-let products = [];
+let allProducts = [];
 
-// Initialize cart count on page load
+// DOM Elements for filtering
+const searchInput = document.getElementById('search-input');
+const categoryFilter = document.getElementById('category-filter');
+
+function populateCategoryFilter() {
+    // FIX: Check if categoryFilter exists before using it
+    if (!categoryFilter) return;
+    const categories = [...new Set(allProducts.map(p => p.category))];
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>'; // Reset
+    categories.forEach(category => {
+        if (category) {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            categoryFilter.appendChild(option);
+        }
+    });
+}
+
+function renderFilteredProducts() {
+    // FIX: Check if these elements exist before proceeding
+    if (!productContainer || !searchInput || !categoryFilter) return;
+
+    productContainer.innerHTML = "";
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedCategory = categoryFilter.value;
+
+    const filteredProducts = allProducts.filter(product => {
+        const nameMatch = product.name.toLowerCase().includes(searchTerm);
+        const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
+        return nameMatch && categoryMatch;
+    });
+
+    if (filteredProducts.length === 0) {
+        productContainer.innerHTML = '<div class="no-products">No products match your criteria.</div>';
+        return;
+    }
+
+    filteredProducts.forEach(product => renderProductCard(product));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount();
     const orderForm = document.getElementById("orderForm");
     if (orderForm) orderForm.addEventListener("submit", submitOrder);
-    if (cartCount) cartCount.addEventListener("click", showCart);
+
+    if (window.location.hash === '#buyFormPopup') {
+        openBuyForm();
+        history.replaceState(null, null, ' ');
+    }
+
+    // FIX: Only add event listeners if the elements exist
+    if (searchInput) searchInput.addEventListener('input', renderFilteredProducts);
+    if (categoryFilter) categoryFilter.addEventListener('change', renderFilteredProducts);
 });
 
-// Form Visibility Functions
 function showLogin() {
+    if (!loginForm || !signupForm) return;
     loginForm.classList.remove("hidden");
     signupForm.classList.add("hidden");
     clearFormInputs(signupForm);
 }
 
 function showSignup() {
+    if (!loginForm || !signupForm) return;
     loginForm.classList.add("hidden");
     signupForm.classList.remove("hidden");
     clearFormInputs(loginForm);
@@ -50,21 +83,17 @@ function clearFormInputs(form) {
     form.querySelectorAll('input').forEach(input => input.value = '');
 }
 
-// Authentication Functions
 async function login() {
     try {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
-        
-        if (!email || !password) {
-            throw new Error('Please fill in all fields');
-        }
+        if (!email || !password) throw new Error('Please fill in all fields');
 
         await auth.signInWithEmailAndPassword(email, password);
-        showToast("Logged in successfully!", "success");
+        window.showToast("Logged in successfully!", "success");
         clearFormInputs(loginForm);
     } catch (err) {
-        showToast(err.message, "error");
+        window.showToast(err.message, "error");
     }
 }
 
@@ -73,173 +102,88 @@ async function signup() {
         const name = document.getElementById("signup-name").value.trim();
         const email = document.getElementById("signup-email").value.trim();
         const password = document.getElementById("signup-password").value;
-        
-        if (!name || !email || !password) {
-            throw new Error('Please fill in all fields');
-        }
-
-        if (password.length < 6) {
-            throw new Error('Password must be at least 6 characters');
-        }
+        if (!name || !email || !password) throw new Error('Please fill in all fields');
+        if (password.length < 6) throw new Error('Password must be at least 6 characters');
 
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         await userCredential.user.updateProfile({ displayName: name });
-        showToast("Account created successfully!", "success");
+        window.showToast("Account created successfully!", "success");
         showLogin();
     } catch (err) {
-        showToast(err.message, "error");
+        window.showToast(err.message, "error");
     }
 }
 
-async function logout() {
-    try {
-        await auth.signOut();
-        showToast("Logged out successfully!", "success");
-        cart = [];
-        localStorage.removeItem('cart');
-        updateCartCount();
-    } catch (err) {
-        showToast("Error logging out: " + err.message, "error");
-    }
-}
-
-// Product Functions
 async function loadProducts() {
+    if (!productContainer) return;
     try {
         productContainer.innerHTML = '<div class="loading">Loading products...</div>';
-        
         const snapshot = await db.collection("products").get();
-        products = [];
-        productContainer.innerHTML = "";
-        
+        allProducts = [];
         if (snapshot.empty) {
             productContainer.innerHTML = '<div class="no-products">No products available</div>';
             return;
         }
-
         snapshot.forEach(doc => {
-            const data = { id: doc.id, ...doc.data() };
-            products.push(data);
-            renderProductCard(data);
+            allProducts.push({ id: doc.id, ...doc.data() });
         });
+        populateCategoryFilter();
+        renderFilteredProducts();
     } catch (error) {
-        showToast("Error loading products: " + error.message, "error");
+        console.error("Error loading products:", error);
         productContainer.innerHTML = '<div class="error">Failed to load products</div>';
     }
 }
 
 function renderProductCard(data) {
-    const imgUrl = Array.isArray(data.image) ? data.image[0] : data.image;
+    const imgUrl = (Array.isArray(data.image) ? data.image[0] : data.image) || 'assets/placeholder.png';
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
         <a href="product.html?id=${data.id}" class="product-link">
-            <img src="${imgUrl}" alt="${data.name}">
+            <img src="${imgUrl}" alt="${data.name}" loading="lazy">
             <h3>${data.name}</h3>
             <p class="price">₹${data.price}</p>
         </a>
-        <button onclick='addToCart(${JSON.stringify(data)})'>
+        <button data-product-id="${data.id}" onclick='addToCart(this)'>
             <i class="fa-solid fa-cart-plus"></i> Add to Cart
         </button>
     `;
-    productContainer.appendChild(card);
+    if (productContainer) productContainer.appendChild(card);
 }
 
-// Cart Functions
-function addToCart(product) {
-    if (!auth.currentUser) {
-        showToast("Please login to add items to cart", "error");
-        return;
+function addToCart(button) {
+    const productId = button.getAttribute('data-product-id');
+    const productToAdd = allProducts.find(p => p.id === productId);
+    if (productToAdd) {
+        window.addToCart(productToAdd);
+    } else {
+        window.showToast("Could not add item to cart.", "error");
     }
-    
-    cart.push(product);
-    updateCartCount();
-    saveCartToLocalStorage();
-    showToast("Added to cart!", "success");
-}
-
-function updateCartCount() {
-    const badge = cartCount.querySelector(".cart-badge");
-    badge.textContent = cart.length;
-    badge.style.display = cart.length ? 'block' : 'none';
-}
-
-function showCart() {
-    const cartItems = document.getElementById("cart-items");
-    const cartTotal = document.getElementById("cart-total");
-    const cartModal = document.getElementById("cart-modal");
-    if (cart.length === 0) {
-        cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-        cartTotal.innerHTML = '';
-        cartModal.classList.remove("hidden");
-        return;
-    }
-
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    
-    cartItems.innerHTML = cart.map((item, index) => `
-        <div class="cart-item">
-            <img src="${Array.isArray(item.image) ? item.image[0] : item.image}" alt="${item.name}" onerror="this.src='assets/placeholder.png'">
-            <div class="item-details">
-                <h4>${item.name}</h4>
-                <p>₹${item.price.toFixed(2)}</p>
-            </div>
-            <button onclick="removeFromCart(${index})" class="remove-btn">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        </div>
-    `).join('');
-    
-    cartTotal.innerHTML = `
-        <h3>Total: ₹${total.toFixed(2)}</h3>
-        <p class="item-count">${cart.length} item${cart.length !== 1 ? 's' : ''}</p>
-    `;
-    
-    cartModal.classList.remove("hidden");
-}
-
-function closeCart() {
-    document.getElementById("cart-modal").classList.add("hidden");
 }
 
 function openBuyForm() {
-    document.getElementById("buyFormPopup").classList.remove("hidden");
+    if (buyFormPopup) buyFormPopup.classList.remove("hidden");
+    if (cartModal) cartModal.classList.add("hidden"); // Also close the cart
 }
 
 function closeBuyForm() {
-    document.getElementById("buyFormPopup").classList.add("hidden");
+    if (buyFormPopup) buyFormPopup.classList.add("hidden");
 }
 
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    updateCartCount();
-    saveCartToLocalStorage();
-    showCart();
-    showToast("Item removed from cart!", "success");
-}
-
-function saveCartToLocalStorage() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-// Order Functions
 async function submitOrder(e) {
     e.preventDefault();
-    
-    if (!auth.currentUser) {
-        showToast("Please login to place an order", "error");
-        return;
-    }
-    
-    if (cart.length === 0) {
-        showToast("Your cart is empty!", "error");
-        return;
-    }
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+    if (!auth.currentUser) {
+        return window.showToast("Please login to place an order", "error");
+    }
+    if (cart.length === 0) {
+        return window.showToast("Your cart is empty!", "error");
+    }
     const form = document.getElementById("orderForm");
     if (!form.checkValidity()) {
-        showToast("Please fill in all required fields", "error");
-        return;
+        return window.showToast("Please fill in all required fields", "error");
     }
 
     try {
@@ -252,71 +196,43 @@ async function submitOrder(e) {
             pincode: document.getElementById("pincode").value.trim(),
             phone: document.getElementById("phone").value.trim(),
             items: cart,
-            total: cart.reduce((sum, item) => sum + item.price, 0),
+            total: cart.reduce((sum, item) => item ? sum + item.price : sum, 0),
             status: 'pending',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
 
         await db.collection("orders").add(orderData);
-        showToast("Order placed successfully!", "success");
-        cart = [];
+        window.showToast("Order placed successfully!", "success");
         localStorage.removeItem('cart');
-        updateCartCount();
+        window.updateCartCount();
         closeBuyForm();
-        closeCart();
-        clearFormInputs(document.getElementById("orderForm"));
+        if (cartModal) cartModal.classList.add("hidden");
+        clearFormInputs(form);
     } catch (error) {
-        showToast("Error placing order: " + error.message, "error");
+        window.showToast("Error placing order: " + error.message, "error");
     }
 }
 
-// Toast Notification
-function showToast(message, type = "success") {
-    const toast = document.createElement("div");
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.classList.add("show");
-        setTimeout(() => {
-            toast.classList.remove("show");
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }, 100);
-}
-
-// Auth state observer
 auth.onAuthStateChanged(user => {
+    const authSection = document.getElementById('auth-section');
+    const productsSection = document.getElementById('products-section');
     if (user) {
-        loginForm.classList.add("hidden");
-        signupForm.classList.add("hidden");
-        productContainer.classList.remove("hidden");
+        if (authSection) authSection.classList.add("hidden");
+        if (productsSection) productsSection.classList.remove("hidden");
         loadProducts();
-        // Show user name in navbar
-        profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
-        profileName.style.display = "inline-block";
     } else {
-        loginForm.classList.remove("hidden");
-        signupForm.classList.add("hidden");
-        productContainer.classList.add("hidden");
-        cart = [];
-        localStorage.removeItem('cart');
-        updateCartCount();
-        profileName.textContent = '';
-        profileName.style.display = "none";
+        if (authSection) authSection.classList.remove("hidden");
+        if (productsSection) productsSection.classList.add("hidden");
     }
 });
 
 function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
-        .then(result => {
-            showToast("Logged in with Google!", "success");
+        .then(() => {
+            window.showToast("Logged in with Google!", "success");
         })
         .catch(error => {
-            showToast(error.message, "error");
+            window.showToast(error.message, "error");
         });
 }
-
-
