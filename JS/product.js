@@ -56,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (window.location.hash === '#buyFormPopup') {
         openBuyForm();
+        // Remove the hash from the URL so it doesn't trigger on refresh
+        history.replaceState(null, null, ' ');
     }
 
     searchInput.addEventListener('input', renderFilteredProducts);

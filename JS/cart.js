@@ -13,60 +13,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function showCart() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const cartItems = document.getElementById("cart-items");
-        const cartTotal = document.getElementById("cart-total");
-
-        if (!cartModal || !cartItems || !cartTotal) return;
-
-        if (cart.length === 0) {
-            cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-            cartTotal.innerHTML = '';
-        } else {
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            cartItems.innerHTML = cart.map((item, index) => `
-                <div class="cart-item">
-                    <img src="${Array.isArray(item.image) ? item.image[0] : item.image}" alt="${item.name}" onerror="this.src='assets/placeholder.png'">
-                    <div class="item-details">
-                        <h4>${item.name}</h4>
-                        <p>₹${item.price.toFixed(2)}</p>
-                    </div>
-                    <button onclick="window.removeFromCart(${index})" class="remove-btn">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            `).join('');
-            cartTotal.innerHTML = `
-                <h3>Total: ₹${total.toFixed(2)}</h3>
-                <p class="item-count">${cart.length} item${cart.length !== 1 ? 's' : ''}</p>
-            `;
-        }
-        cartModal.classList.remove("hidden");
-    }
-
     window.removeFromCart = (index) => {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         cart.splice(index, 1);
         localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
-        showCart(); // Re-render the cart
+        window.updateCartCount();
+        window.showCart(); // Re-render the cart
     };
 
-    function closeCart() {
-        if(cartModal) cartModal.classList.add("hidden");
-    }
-
-    if (cartCountEl) {
-        cartCountEl.addEventListener("click", (e) => {
+    const cartLink = document.querySelector('#cart-count a');
+    if (cartLink) {
+        cartLink.addEventListener("click", (e) => {
             e.preventDefault();
-            showCart();
+            window.showCart();
         });
     }
 
     // Add event listener for close button inside the cart modal
     const closeBtn = document.querySelector("#cart-modal .close-btn");
-    if(closeBtn) closeBtn.addEventListener('click', closeCart);
+    if(closeBtn) closeBtn.addEventListener('click', window.closeCart);
 
     window.addToCart = (product) => {
         if (!auth.currentUser) {
