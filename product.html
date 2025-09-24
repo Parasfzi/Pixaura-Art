@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 <body class="animated-gradient-bg">
+    <!-- Navigation -->
     <nav>
         <div class="logo">
             <a href="index.html"><img alt="Pixaura Logo" loading="lazy" src="assets/logo.png"/></a>
@@ -45,25 +46,45 @@
 
     <main>
         <section class="policy-section">
-            <div id="product-detail">
-                </div>
+            <div id="product-detail"></div>
         </section>
     </main>
 
     <div id="toast" class="toast"></div>
 
+    <!-- Cart Modal -->
     <div id="cart-modal" class="modal hidden">
         <div class="modal-content">
             <h2>Your Cart <i class="fa-solid fa-cart-shopping"></i></h2>
             <div id="cart-items"></div>
             <div id="cart-total"></div>
             <div class="cart-buttons">
-                <button type="button" onclick="window.location.href='products.html#buyFormPopup'" class="buy-btn">Buy Now</button>
-                <button type="button" class="close-btn">Close</button>
+                <button type="button" onclick="openBuyForm()" class="buy-btn">Buy Now</button>
+                <button type="button" onclick="closeCart()" class="close-btn">Close</button>
             </div>
         </div>
     </div>
 
+    <!-- Buy Form Modal -->
+    <div id="buyFormPopup" class="modal hidden">
+        <div class="modal-content">
+            <h3>Enter Shipping Details</h3>
+            <form id="orderForm">
+                <input type="text" id="fullName" placeholder="Full Name" required>
+                <input type="text" id="address" placeholder="Address" required>
+                <input type="text" id="city" placeholder="City" required>
+                <input type="text" id="state" placeholder="State" required>
+                <input type="text" id="pincode" placeholder="Pincode" required>
+                <input type="tel" id="phone" placeholder="Phone Number" required>
+                <div class="form-buttons">
+                    <button type="submit" class="submit-btn">Place Order</button>
+                    <button type="button" onclick="closeBuyForm()" class="close-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
     <footer class="footer">
       <div class="footer-logo">
         <img src="assets/logo.png" alt="Pixaura Logo" />
@@ -85,6 +106,7 @@
       <p>&copy; 2025 Pixaura. All Rights Reserved.</p>
     </footer>
 
+    <!-- Firebase & Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -106,6 +128,7 @@
     <script src="JS/utils.js"></script>
     <script src="JS/auth-nav.js"></script>
     <script src="JS/cart.js"></script>
+    <script src="JS/product.js"></script>
     <script src="JS/script.js"></script>
 
     <script>
@@ -213,7 +236,7 @@
             if (productData) {
                 addToCart();
                 setTimeout(() => {
-                    window.location.href = "products.html#buyFormPopup";
+                    openBuyForm();
                 }, 300);
             } else {
                 window.showToast("Product data not loaded yet.", "error");
