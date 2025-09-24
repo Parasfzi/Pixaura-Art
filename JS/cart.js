@@ -70,15 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addToCart = (product) => {
         if (!auth.currentUser) {
-            alert("Please login to add items to cart"); // Using alert as toast is not defined here
+            window.showToast("Please login to add items to cart", "error");
             return;
         }
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         cart.push(product);
         localStorage.setItem('cart', JSON.stringify(cart));
         window.updateCartCount();
-        // A simple confirmation, since toast is defined elsewhere
-        alert(`${product.name} has been added to your cart!`);
+        window.showToast(`${product.name} has been added to your cart!`, "success");
     };
 
     // Initial cart count update
