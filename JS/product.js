@@ -157,19 +157,29 @@ function addToCart(button) {
     const productToAdd = allProducts.find(p => p.id === productId);
 
     if (productToAdd) {
+        // 🟢 Safe values force kar rahe hai
+        const imgUrl = (Array.isArray(productToAdd.image) && productToAdd.image.length > 0)
+            ? productToAdd.image[0]
+            : (typeof productToAdd.image === "string" && productToAdd.image.trim() !== "")
+                ? productToAdd.image
+                : "assets/fallback.png";
+
         const safeProduct = {
             id: productToAdd.id,
             name: productToAdd.name || "Unnamed Product",
             price: (typeof productToAdd.price === "number")
                     ? productToAdd.price
-                    : parseFloat(productToAdd.price) || 0,
-            image: (Array.isArray(productToAdd.image) ? productToAdd.image : [productToAdd.image || "assets/fallback.png"])
+                    : (!isNaN(parseFloat(productToAdd.price)) ? parseFloat(productToAdd.price) : 0),
+            image: [imgUrl] // always array for consistency
         };
+
+        console.log("✅ Adding to cart:", safeProduct); // debugging
         window.addToCart(safeProduct);
     } else {
         window.showToast("Could not add item to cart.", "error");
     }
 }
+
 
 function openBuyForm() {
     if (buyFormPopup) buyFormPopup.classList.remove("hidden");
