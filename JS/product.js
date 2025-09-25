@@ -204,6 +204,32 @@ function addProductObjectToCart(product) {
     console.log("🛒 Cart updated:", cart);
 }
 
+// Fix for addToCart: DO NOT call itself recursively!
+function addToCart(product) {
+    if (!product || typeof product !== 'object') {
+        window.showToast("Could not add item to cart.", "error");
+        return;
+    }
+
+    // Normalize product fields
+    const normalized = {
+        id: product.id || `unknown-${Date.now()}`,
+        name: String(product.name || "Unnamed Product"),
+        price: (typeof product.price === 'number') ? product.price : ( !isNaN(parseFloat(product.price)) ? parseFloat(product.price) : 0 ),
+        image: Array.isArray(product.image) ? product.image : ( product.image ? [String(product.image)] : ['assets/fallback.png'] )
+    };
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.push(normalized);
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    window.updateCartCount && window.updateCartCount();
+    window.showToast(`${normalized.name} has been added to your cart!`, "success");
+    window.showCart && window.showCart();
+
+    console.log("🛒 Cart updated:", cart);
+}
+
 /* --- remaining functions (order, auth handlers etc.) --- */
 /* keep your existing submitOrder, openBuyForm, closeBuyForm, login/signup, loadProducts etc. */
 async function submitOrder(e) {
@@ -270,4 +296,60 @@ function googleLogin() {
         .catch(error => {
             window.showToast(error.message, "error");
         });
+}
+
+function login() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (!email || !password) {
+        window.showToast("Please enter both email and password.", "error");
+        return;
+    }
+    auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+            window.showToast("Login successful!", "success");
+            // Optionally hide login form and show products
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('filter-section').style.display = '';
+            document.getElementById('products-section').classList.remove('hidden');
+        })
+        .catch(error => {
+            window.showToast(error.message, "error");
+        });
+}
+
+function signup() {
+    const name = document.getElementById('signup-name').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    if (!name || !email || !password) {
+        window.showToast("Please fill all fields.", "error");
+        return;
+    }
+    auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+            // Optionally save name to Firestore
+            window.showToast("Signup successful! Please login.", "success");
+            showLogin();
+        })
+        .catch(error => {
+            window.showToast(error.message, "error");
+        });
+}
+
+function showSignup() {
+    document.getElementById('login-form').classList.add('hidden');
+    document.getElementById('signup-form').classList.remove('hidden');
+}
+
+function showLogin() {
+    document.getElementById('signup-form').classList.add('hidden');
+    document.getElementById('login-form').classList.remove('hidden');
+}
+
+function openBuyForm() {
+    const buyFormPopup = document.getElementById("buyFormPopup");
+    if (buyFormPopup) {
+        buyFormPopup.classList.remove("hidden");
+    }
 }

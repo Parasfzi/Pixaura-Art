@@ -20,15 +20,31 @@ document.addEventListener('DOMContentLoaded', () => {
                       const orderDate = order.timestamp.toDate().toLocaleDateString();
                       let itemsHtml = '<ul class="order-items-list">';
                       order.items.forEach(item => {
-                          itemsHtml += `<li>${item.name} - ₹${item.price.toFixed(2)}</li>`;
+                          // Safely parse item price
+                          let itemPrice = 0;
+                          if (typeof item.price === "number") {
+                              itemPrice = item.price;
+                          } else if (!isNaN(parseFloat(item.price))) {
+                              itemPrice = parseFloat(item.price);
+                          }
+                          itemsHtml += `<li>${item.name} - ₹${itemPrice.toFixed(2)}</li>`;
                       });
                       itemsHtml += '</ul>';
+
+                      // Safely parse total
+                      let total = 0;
+                      if (typeof order.total === "number") {
+                          total = order.total;
+                      } else if (!isNaN(parseFloat(order.total))) {
+                          total = parseFloat(order.total);
+                      }
+                      const totalDisplay = total ? total.toFixed(2) : "0.00";
 
                       ordersHtml += `
                           <div class="order-card">
                               <div class="order-header">
                                   <span>Order Date: ${orderDate}</span>
-                                  <span>Total: ₹${order.total.toFixed(2)}</span>
+                                  <span>Total: ₹${totalDisplay}</span>
                               </div>
                               <div class="order-body">
                                   <p><strong>Items:</strong></p>
