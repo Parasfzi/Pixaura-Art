@@ -23,20 +23,27 @@ window.showCart = function() {
         cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
         cartTotal.innerHTML = '';
     } else {
-        const total = cart.reduce((sum, item) => sum + (item?.price || 0), 0);
+        const total = cart.reduce((sum, item) => sum + (
+            typeof item.price === "number"
+                ? item.price
+                : (!isNaN(parseFloat(item.price)) ? parseFloat(item.price) : 0)
+        ), 0);
 
         cartItems.innerHTML = cart.map((item, index) => {
             if (!item) return '';
 
+            // Always get the first image if array, or use string, fallback if missing
+            let imgSrc = "assets/fallback.png";
+            if (Array.isArray(item.image) && item.image.length > 0) {
+                imgSrc = item.image[0];
+            } else if (typeof item.image === "string" && item.image.trim() !== "") {
+                imgSrc = item.image;
+            }
+
+            // Always parse price safely
             const priceDisplay = (typeof item.price === "number")
                 ? item.price.toFixed(2)
                 : (!isNaN(parseFloat(item.price)) ? parseFloat(item.price).toFixed(2) : "0.00");
-
-            const imgSrc = (item.image && Array.isArray(item.image) && item.image.length > 0)
-                ? item.image[0]
-                : (item.image && typeof item.image === "string")
-                    ? item.image
-                    : "assets/fallback.png";
 
             return `
                 <div class="cart-item">
