@@ -190,7 +190,7 @@
                         <div class="product-detail-price">₹${data.price}</div>
                         <div class="product-detail-desc">${formattedDescription}</div> 
                         <div class="product-detail-actions">
-                            <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                            <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCartFromDetail()">Add to Cart</button>
                             <button id="buy-now-btn" class="buy-now-btn" onclick="buyNow()">Buy Now</button>
                         </div>
                     </div>
@@ -211,7 +211,7 @@
         
         function buyNow() {
             if (productData) {
-                addToCart();
+                addToCartFromDetail();
                 setTimeout(() => {
                     window.location.href = "products.html#buyFormPopup";
                 }, 300);
@@ -228,6 +228,14 @@
             document.querySelectorAll('.product-thumbnails img').forEach(img => {
                 img.classList.toggle('active', img.src === url);
             });
+        }
+
+        function addToCartFromDetail() {
+            if (productData) {
+                window.addToCart(productData);
+            } else {
+                window.showToast("Product data not loaded yet.", "error");
+            }
         }
     </script>
 </body>
