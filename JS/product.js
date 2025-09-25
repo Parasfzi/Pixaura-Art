@@ -3,20 +3,20 @@ const loginForm = document.getElementById("login-form");
 const signupForm = document.getElementById("signup-form");
 const productContainer = document.getElementById("product-container");
 const cartModal = document.getElementById("cart-modal");
-const cartCount = document.getElementById("cart-count");
 const buyFormPopup = document.getElementById("buyFormPopup");
 const profileName = document.getElementById("profile-name");
 
 // State Management
 let allProducts = [];
-let filteredProducts = [];
 
 // DOM Elements for filtering
 const searchInput = document.getElementById('search-input');
 const categoryFilter = document.getElementById('category-filter');
 
 function populateCategoryFilter() {
+    if (!categoryFilter) return;
     const categories = [...new Set(allProducts.map(p => p.category))];
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>';
     categories.forEach(category => {
         if (category) {
             const option = document.createElement('option');
@@ -28,11 +28,13 @@ function populateCategoryFilter() {
 }
 
 function renderFilteredProducts() {
+    if (!productContainer || !searchInput || !categoryFilter) return;
+
     productContainer.innerHTML = "";
     const searchTerm = searchInput.value.toLowerCase();
     const selectedCategory = categoryFilter.value;
 
-    filteredProducts = allProducts.filter(product => {
+    const filteredProducts = allProducts.filter(product => {
         const nameMatch = product.name.toLowerCase().includes(searchTerm);
         const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
         return nameMatch && categoryMatch;
@@ -43,34 +45,31 @@ function renderFilteredProducts() {
         return;
     }
 
-    filteredProducts.forEach(product => {
-        renderProductCard(product);
-    });
+    filteredProducts.forEach(product => renderProductCard(product));
 }
 
-// Initialize cart count on page load
 document.addEventListener('DOMContentLoaded', () => {
     const orderForm = document.getElementById("orderForm");
     if (orderForm) orderForm.addEventListener("submit", submitOrder);
 
     if (window.location.hash === '#buyFormPopup') {
         openBuyForm();
-        // Remove the hash from the URL so it doesn't trigger on refresh
         history.replaceState(null, null, ' ');
     }
 
-    searchInput.addEventListener('input', renderFilteredProducts);
-    categoryFilter.addEventListener('change', renderFilteredProducts);
+    if (searchInput) searchInput.addEventListener('input', renderFilteredProducts);
+    if (categoryFilter) categoryFilter.addEventListener('change', renderFilteredProducts);
 });
 
-// Form Visibility Functions
 function showLogin() {
+    if (!loginForm || !signupForm) return;
     loginForm.classList.remove("hidden");
     signupForm.classList.add("hidden");
     clearFormInputs(signupForm);
 }
 
 function showSignup() {
+    if (!loginForm || !signupForm) return;
     loginForm.classList.add("hidden");
     signupForm.classList.remove("hidden");
     clearFormInputs(loginForm);
@@ -81,21 +80,17 @@ function clearFormInputs(form) {
     form.querySelectorAll('input').forEach(input => input.value = '');
 }
 
-// Authentication Functions
 async function login() {
     try {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
-        
-        if (!email || !password) {
-            throw new Error('Please fill in all fields');
-        }
+        if (!email || !password) throw new Error('Please fill in all fields');
 
         await auth.signInWithEmailAndPassword(email, password);
-        showToast("Logged in successfully!", "success");
+        window.showToast("Logged in successfully!", "success");
         clearFormInputs(loginForm);
     } catch (err) {
-        showToast(err.message, "error");
+        window.showToast(err.message, "error");
     }
 }
 
@@ -104,104 +99,100 @@ async function signup() {
         const name = document.getElementById("signup-name").value.trim();
         const email = document.getElementById("signup-email").value.trim();
         const password = document.getElementById("signup-password").value;
-        
-        if (!name || !email || !password) {
-            throw new Error('Please fill in all fields');
-        }
-
-        if (password.length < 6) {
-            throw new Error('Password must be at least 6 characters');
-        }
+        if (!name || !email || !password) throw new Error('Please fill in all fields');
+        if (password.length < 6) throw new Error('Password must be at least 6 characters');
 
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         await userCredential.user.updateProfile({ displayName: name });
-        showToast("Account created successfully!", "success");
+        window.showToast("Account created successfully!", "success");
         showLogin();
     } catch (err) {
-        showToast(err.message, "error");
+        window.showToast(err.message, "error");
     }
 }
 
-
-// Product Functions
 async function loadProducts() {
+    if (!productContainer) return;
     try {
         productContainer.innerHTML = '<div class="loading">Loading products...</div>';
-        
         const snapshot = await db.collection("products").get();
         allProducts = [];
-        
         if (snapshot.empty) {
             productContainer.innerHTML = '<div class="no-products">No products available</div>';
             return;
         }
-
         snapshot.forEach(doc => {
-            const data = { id: doc.id, ...doc.data() };
-            allProducts.push(data);
+            allProducts.push({ id: doc.id, ...doc.data() });
         });
-
         populateCategoryFilter();
         renderFilteredProducts();
-
     } catch (error) {
-        showToast("Error loading products: " + error.message, "error");
+        console.error("Error loading products:", error);
         productContainer.innerHTML = '<div class="error">Failed to load products</div>';
     }
 }
 
 function renderProductCard(data) {
-    // FIX #2: Use the product image OR a placeholder if it doesn't exist
-    const imgUrl = (Array.isArray(data.image) ? data.image[0] : data.image) || 'assets/placeholder.png';
+    const imgUrl = (Array.isArray(data.image) ? data.image[0] : data.image) || 'assets/fallback.png';
+    const price = (typeof data.price === "number") ? data.price : parseFloat(data.price) || 0;
+
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
         <a href="product.html?id=${data.id}" class="product-link">
-            <img src="${imgUrl}" alt="${data.name}">
+            <img src="${imgUrl}" alt="${data.name}" loading="lazy"
+                 onerror="this.onerror=null; this.src='assets/fallback.png';">
             <h3>${data.name}</h3>
-            <p class="price">₹${data.price}</p>
+            <p class="price">₹${price.toFixed(2)}</p>
         </a>
-        <button onclick='addToCart(${JSON.stringify(data)})'>
+        <button data-product-id="${data.id}" onclick='addToCart(this)'>
             <i class="fa-solid fa-cart-plus"></i> Add to Cart
         </button>
     `;
-    productContainer.appendChild(card);
+    if (productContainer) productContainer.appendChild(card);
 }
 
-// Cart Functions
-function addToCart(product) {
-    window.addToCart(product);
-    showToast("Added to cart!", "success");
+function addToCart(button) {
+    const productId = button.getAttribute('data-product-id');
+    const productToAdd = allProducts.find(p => p.id === productId);
+
+    if (productToAdd) {
+        const safeProduct = {
+            id: productToAdd.id,
+            name: productToAdd.name || "Unnamed Product",
+            price: (typeof productToAdd.price === "number")
+                    ? productToAdd.price
+                    : parseFloat(productToAdd.price) || 0,
+            image: (Array.isArray(productToAdd.image) ? productToAdd.image : [productToAdd.image || "assets/fallback.png"])
+        };
+        window.addToCart(safeProduct);
+    } else {
+        window.showToast("Could not add item to cart.", "error");
+    }
 }
 
 function openBuyForm() {
-    document.getElementById("buyFormPopup").classList.remove("hidden");
+    if (buyFormPopup) buyFormPopup.classList.remove("hidden");
+    if (cartModal) cartModal.classList.add("hidden");
 }
 
 function closeBuyForm() {
-    document.getElementById("buyFormPopup").classList.add("hidden");
+    if (buyFormPopup) buyFormPopup.classList.add("hidden");
 }
 
-// Order Functions
 async function submitOrder(e) {
     e.preventDefault();
-    
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
     if (!auth.currentUser) {
-        showToast("Please login to place an order", "error");
-        return;
+        return window.showToast("Please login to place an order", "error");
     }
-    
     if (cart.length === 0) {
-        showToast("Your cart is empty!", "error");
-        return;
+        return window.showToast("Your cart is empty!", "error");
     }
-
     const form = document.getElementById("orderForm");
     if (!form.checkValidity()) {
-        showToast("Please fill in all required fields", "error");
-        return;
+        return window.showToast("Please fill in all required fields", "error");
     }
 
     try {
@@ -214,65 +205,43 @@ async function submitOrder(e) {
             pincode: document.getElementById("pincode").value.trim(),
             phone: document.getElementById("phone").value.trim(),
             items: cart,
-            total: cart.reduce((sum, item) => sum + item.price, 0),
+            total: cart.reduce((sum, item) => item ? sum + item.price : sum, 0),
             status: 'pending',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
 
         await db.collection("orders").add(orderData);
-        showToast("Order placed successfully!", "success");
+        window.showToast("Order placed successfully!", "success");
         localStorage.removeItem('cart');
         window.updateCartCount();
         closeBuyForm();
-        const cartModal = document.getElementById("cart-modal");
-        if(cartModal) cartModal.classList.add("hidden");
-        clearFormInputs(document.getElementById("orderForm"));
+        if (cartModal) cartModal.classList.add("hidden");
+        clearFormInputs(form);
     } catch (error) {
-        showToast("Error placing order: " + error.message, "error");
+        window.showToast("Error placing order: " + error.message, "error");
     }
 }
 
-
-// Auth state observer
 auth.onAuthStateChanged(user => {
     const authSection = document.getElementById('auth-section');
     const productsSection = document.getElementById('products-section');
-    const filterSection = document.getElementById('filter-section');
     if (user) {
-        authSection.classList.add("hidden");
-        productsSection.classList.remove("hidden");
-        filterSection.style.display = 'block';
+        if (authSection) authSection.classList.add("hidden");
+        if (productsSection) productsSection.classList.remove("hidden");
         loadProducts();
-        
-        // FIX #1: Add a check to see if the element exists
-        if (profileName) {
-            profileName.textContent = user.displayName ? `Hi, ${user.displayName}` : '';
-            profileName.style.display = "inline-block";
-        }
-
     } else {
-        authSection.classList.remove("hidden");
-        productsSection.classList.add("hidden");
-        filterSection.style.display = 'none';
-        cart = [];
-        localStorage.removeItem('cart');
-        updateCartCount();
-        
-        // FIX #1: Add a check here as well
-        if (profileName) {
-            profileName.textContent = '';
-            profileName.style.display = "none";
-        }
+        if (authSection) authSection.classList.remove("hidden");
+        if (productsSection) productsSection.classList.add("hidden");
     }
 });
 
 function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
-        .then(result => {
-            showToast("Logged in with Google!", "success");
+        .then(() => {
+            window.showToast("Logged in with Google!", "success");
         })
         .catch(error => {
-            showToast(error.message, "error");
+            window.showToast(error.message, "error");
         });
 }
