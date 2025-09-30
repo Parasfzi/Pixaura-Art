@@ -945,6 +945,7 @@ section.featured-section {
     gap: 10px;
     justify-content: center;
     margin-bottom: 24px;
+    flex-wrap: wrap;
 }
 .product-thumbnails img {
     width: 60px;
