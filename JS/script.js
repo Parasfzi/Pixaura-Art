@@ -93,7 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.querySelectorAll('#main-nav a').forEach(link => {
-            link.addEventListener('click', () => {
+            link.addEventListener('click', (e) => {
+                // Do not close the nav if the profile trigger is clicked,
+                // as that is handled by auth-nav.js to show the dropdown.
+                if (e.target.id === 'profile-menu-trigger') {
+                    return;
+                }
                 nav.classList.remove('open');
                 hamburger.classList.remove('active');
             });
