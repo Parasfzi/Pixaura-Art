@@ -238,5 +238,78 @@
             }
         }
     </script>
+
+    <!-- Add this at the end of <body> (after JS files) to override any old inline addToCart
+         and to attach a safe click handler on the detail page button if present. -->
+    <script>
+        // canonical cart writer (defines addProductObjectToCart before any alias)
+    function addProductObjectToCart(product) {
+        if (!product || typeof product !== 'object') {
+            window.showToast && window.showToast("Invalid product.", "error");
+            return;
+        }
+
+        // normalize product fields
+        const normalized = {
+            id: product.id || ('p-' + Date.now()),
+            name: String(product.name || "Unnamed Product"),
+            price: (typeof product.price === 'number') ? product.price
+                   : (!isNaN(parseFloat(product.price)) ? parseFloat(product.price) : 0),
+            image: Array.isArray(product.image) ? product.image
+                   : (product.image ? [String(product.image)] : ['assets/fallback.png'])
+        };
+
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart.push(normalized);
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        // update UI helpers if available
+        window.updateCartCount && window.updateCartCount();
+        window.showToast && window.showToast(`${normalized.name} added to cart.`, "success");
+        window.showCart && window.showCart();
+        console.log("🛒 Cart updated:", cart);
+    }
+
+    // expose globally so other scripts can call it
+    window.addProductObjectToCart = addProductObjectToCart;
+
+    // safe alias: delegate to canonical writer (prevents recursion / undefined)
+    window.addToCart = function(product) {
+        return window.addProductObjectToCart ? window.addProductObjectToCart(product) : (console.warn("addProductObjectToCart undefined"), undefined);
+    };
+
+    // Remove inline onclick recursion risk and attach safe event listeners
+    (function attachSafeHandlers() {
+        const addBtn = document.getElementById('add-to-cart-btn');
+        const buyBtn = document.getElementById('buy-now-btn');
+
+        if (addBtn) {
+            // remove any inline handler that may cause conflicts
+            addBtn.removeAttribute('onclick');
+            addBtn.addEventListener('click', () => {
+                if (window.productData) {
+                    window.addProductObjectToCart(window.productData);
+                } else {
+                    window.showToast && window.showToast("Product data not loaded yet.", "error");
+                }
+            });
+        }
+
+        if (buyBtn) {
+            buyBtn.removeAttribute('onclick');
+            buyBtn.addEventListener('click', () => {
+                if (window.productData) {
+                    window.addProductObjectToCart(window.productData);
+                    setTimeout(() => {
+                        if (typeof openBuyForm === 'function') openBuyForm();
+                        else window.location.href = "products.html#buyFormPopup";
+                    }, 200);
+                } else {
+                    window.showToast && window.showToast("Product data not loaded yet.", "error");
+                }
+            });
+        }
+    })();
+    </script>
 </body>
 </html>

@@ -204,30 +204,17 @@ function addProductObjectToCart(product) {
     console.log("🛒 Cart updated:", cart);
 }
 
-// Fix for addToCart: DO NOT call itself recursively!
+// Replace the previous addToCart implementation with a safe delegating alias
+// that never calls itself. It delegates to addProductObjectToCart which is the
+// single writer for the cart.
 function addToCart(product) {
-    if (!product || typeof product !== 'object') {
-        window.showToast("Could not add item to cart.", "error");
-        return;
+    // Delegate to canonical writer. This prevents any accidental recursion
+    // if some template or inline script calls window.addToCart(...)
+    if (typeof addProductObjectToCart === 'function') {
+        return addProductObjectToCart(product);
     }
-
-    // Normalize product fields
-    const normalized = {
-        id: product.id || `unknown-${Date.now()}`,
-        name: String(product.name || "Unnamed Product"),
-        price: (typeof product.price === 'number') ? product.price : ( !isNaN(parseFloat(product.price)) ? parseFloat(product.price) : 0 ),
-        image: Array.isArray(product.image) ? product.image : ( product.image ? [String(product.image)] : ['assets/fallback.png'] )
-    };
-
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push(normalized);
-    localStorage.setItem('cart', JSON.stringify(cart));
-
-    window.updateCartCount && window.updateCartCount();
-    window.showToast(`${normalized.name} has been added to your cart!`, "success");
-    window.showCart && window.showCart();
-
-    console.log("🛒 Cart updated:", cart);
+    console.warn("addProductObjectToCart not available — cannot add to cart.");
+    return;
 }
 
 /* --- remaining functions (order, auth handlers etc.) --- */
