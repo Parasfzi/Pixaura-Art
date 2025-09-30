@@ -1000,6 +1000,26 @@ section.featured-section {
 .buy-now-btn:hover {
     background: #e65100;
 }
+
+@media (max-width: 768px) {
+    .product-detail-container {
+        padding: 16px;
+        margin: 20px auto;
+    }
+    .product-images-main img {
+        max-width: 100%;
+    }
+    .product-detail-title {
+        font-size: 1.5rem;
+    }
+    .product-detail-actions {
+        flex-direction: column;
+    }
+    .product-detail-actions button {
+        width: 100%;
+        text-align: center;
+    }
+}
 .toast {
     position: fixed;
     bottom: 30px;

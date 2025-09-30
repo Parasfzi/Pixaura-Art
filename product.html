@@ -190,7 +190,7 @@
                         <div class="product-detail-price">₹${data.price}</div>
                         <div class="product-detail-desc">${formattedDescription}</div> 
                         <div class="product-detail-actions">
-                            <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addToCartFromDetail()">Add to Cart</button>
+                            <button id="add-to-cart-btn" class="add-to-cart-btn" onclick="addProductObjectToCart(productData)">Add to Cart</button>
                             <button id="buy-now-btn" class="buy-now-btn" onclick="buyNow()">Buy Now</button>
                         </div>
                     </div>
@@ -200,18 +200,35 @@
                 document.getElementById('product-detail').innerHTML = "<h1>Error loading product!</h1>";
             });
         }
-        
-        function addToCart() {
-            if (productData) {
-                window.addToCart(productData);
-            } else {
-                window.showToast("Product data not loaded yet.", "error");
+
+        function addProductObjectToCart(product) {
+            if (!product || typeof product !== 'object') {
+                console.warn("addProductObjectToCart called with invalid product:", product);
+                window.showToast("Could not add item to cart.", "error");
+                return;
             }
+
+            const normalized = {
+                id: product.id || `unknown-${Date.now()}`,
+                name: String(product.name || "Unnamed Product"),
+                price: (typeof product.price === 'number') ? product.price : ( !isNaN(parseFloat(product.price)) ? parseFloat(product.price) : 0 ),
+                image: Array.isArray(product.image) ? product.image : ( product.image ? [String(product.image)] : ['assets/fallback.png'] )
+            };
+
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push(normalized);
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            window.updateCartCount && window.updateCartCount();
+            window.showToast(`${normalized.name} has been added to your cart!`, "success");
+            window.showCart && window.showCart();
+
+            console.log("🛒 Cart updated:", cart);
         }
         
         function buyNow() {
             if (productData) {
-                addToCartFromDetail();
+                addProductObjectToCart(productData);
                 setTimeout(() => {
                     window.location.href = "products.html#buyFormPopup";
                 }, 300);
@@ -228,14 +245,6 @@
             document.querySelectorAll('.product-thumbnails img').forEach(img => {
                 img.classList.toggle('active', img.src === url);
             });
-        }
-
-        function addToCartFromDetail() {
-            if (productData) {
-                window.addToCart(productData);
-            } else {
-                window.showToast("Product data not loaded yet.", "error");
-            }
         }
     </script>
 </body>
