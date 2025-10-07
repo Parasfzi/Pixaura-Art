@@ -277,12 +277,16 @@ async function submitOrder(e) {
 auth.onAuthStateChanged(user => {
     const authSection = document.getElementById('auth-section');
     const productsSection = document.getElementById('products-section');
+    const filterSection = document.getElementById('filter-section');
+
     if (user) {
         if (authSection) authSection.classList.add("hidden");
+        if (filterSection) filterSection.classList.remove("hidden");
         if (productsSection) productsSection.classList.remove("hidden");
         loadProducts();
     } else {
         if (authSection) authSection.classList.remove("hidden");
+        if (filterSection) filterSection.classList.add("hidden");
         if (productsSection) productsSection.classList.add("hidden");
     }
 });
@@ -292,6 +296,7 @@ function googleLogin() {
     auth.signInWithPopup(provider)
         .then(() => {
             window.showToast("Logged in with Google!", "success");
+            // UI updates handled by onAuthStateChanged
         })
         .catch(error => {
             window.showToast(error.message, "error");
@@ -308,10 +313,7 @@ function login() {
     auth.signInWithEmailAndPassword(email, password)
         .then(userCredential => {
             window.showToast("Login successful!", "success");
-            // Optionally hide login form and show products
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('filter-section').style.display = '';
-            document.getElementById('products-section').classList.remove('hidden');
+            // UI updates are now handled by onAuthStateChanged
         })
         .catch(error => {
             window.showToast(error.message, "error");
