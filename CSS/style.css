@@ -1371,3 +1371,112 @@ section.featured-section {
   color: #2c5364;
   border: 1px solid #7fdbda;
 }
+
+/* Responsive improvements for search / filter on small screens */
+@media (max-width: 600px) {
+  #filter-section {
+    padding: 12px;
+    margin: 12px 8px;
+  }
+
+  .filter-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .filter-controls input,
+  .filter-controls select {
+    width: 100%;
+    min-width: 0; /* prevents overflow on small devices */
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 1rem;
+  }
+
+  /* reduce surrounding container padding so filters never overflow viewport */
+  .policy-section, .featured-section {
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+}
+
+/* Prevent filter controls from causing horizontal scroll on any viewport */
+.filter-controls input,
+.filter-controls select {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Password toggle layout: input and button on same line, responsive */
+.input-group.password-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0; /* prevents children from forcing overflow on small screens */
+}
+
+.input-group.password-wrapper input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+/* Toggle button stays compact and does not cause layout shifts */
+.password-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 6px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #555;
+  border-radius: 8px;
+}
+
+/* Prevent icon from capturing pointer events (button handles clicks) */
+.password-toggle i {
+  pointer-events: none;
+  font-size: 1.05rem;
+}
+
+/* Focus styles for accessibility */
+.password-toggle:focus {
+  outline: 2px solid rgba(127, 219, 218, 0.6);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Slightly smaller toggle on very small screens to avoid overflow */
+@media (max-width: 420px) {
+  .password-toggle {
+    width: 36px;
+    height: 36px;
+    padding: 5px;
+  }
+
+  .input-group.password-wrapper input {
+    padding: 9px 10px;
+    font-size: 0.95rem;
+  }
+}
