@@ -49,17 +49,39 @@
         <section class="policy-section" id="auth-section">
             <div id="login-form" class="login-form">
                 <h2>Login to Pixaura</h2>
+
+                <!-- Email / Password login -->
                 <input type="email" id="email" placeholder="Email" required>
                 <div class="input-group password-wrapper">
                     <input type="password" id="password" placeholder="Password" required>
                     <button type="button" class="password-toggle" aria-label="Show password" data-target="password">
-                        <span class="pw-emoji" aria-hidden="true">😎</span>
+                        <span class="pw-emoji" aria-hidden="true">👁️</span>
                     </button>
                 </div>
-                <button onclick="login()" class="login-btn">Login</button>
-                <button type="button" onclick="googleLogin()" class="login-btn" style="background:#4285F4;margin-top:10px;">
-                    <i class="fa-brands fa-google"></i> Login with Google
-                </button>
+
+                <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                    <button onclick="login()" class="login-btn">Login</button>
+                    <button type="button" onclick="googleLogin()" class="login-btn" style="background:#4285F4;">
+                        <i class="fa-brands fa-google"></i>
+                    </button>
+                </div>
+
+                <hr style="margin:12px 0;">
+                <h3 style="margin:8px 0">Or login with phone</h3>
+
+                <!-- Phone OTP login -->
+                <div class="form-group">
+                  <input type="tel" id="phone" placeholder="Enter phone (e.g. 9123456789)" maxlength="15" />
+                  <div id="recaptcha-container" style="margin-top:8px;"></div>
+
+                  <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button type="button" onclick="sendOTP()" class="login-btn">Send OTP</button>
+                    <button type="button" onclick="verifyOTP()" class="login-btn">Verify OTP</button>
+                  </div>
+
+                  <input type="text" id="otp" placeholder="Enter OTP" style="margin-top:8px;" />
+                </div>
+
                 <p>Don't have an account? <button type="button" onclick="showSignup()" class="link-btn">Sign up</button></p>
             </div>
 
@@ -73,7 +95,9 @@
                         <span class="pw-emoji" aria-hidden="true">👁️</span>
                     </button>
                 </div>
-                <button onclick="signup()" class="signup-btn">Sign Up</button>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                  <button onclick="signup()" class="signup-btn">Sign Up</button>
+                </div>
                 <p>Already have an account? <button type="button" onclick="showLogin()" class="link-btn">Login</button></p>
             </div>
         </section>
@@ -184,14 +208,13 @@
             if (input.type === 'password') {
               input.type = 'text';
               btn.setAttribute('aria-label','Hide password');
-              if (emoji) emoji.textContent = '🤫';
+              if (emoji) emoji.textContent = '🙈';
             } else {
               input.type = 'password';
               btn.setAttribute('aria-label','Show password');
-              if (emoji) emoji.textContent = '😎';
+              if (emoji) emoji.textContent = '👁️';
             }
           });
-          // keyboard accessibility (Enter/Space)
           btn.addEventListener('keydown', function(e){
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
@@ -199,7 +222,54 @@
             }
           });
         });
+
+        // Initialize invisible reCAPTCHA for phone auth
+        try {
+          window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            size: 'invisible',
+            callback: function(response) {
+              // reCAPTCHA solved — will proceed with sendOTP
+            }
+          });
+          // render in case firebase wants explicit render
+          window.recaptchaVerifier.render().catch(()=>{});
+        } catch (e) {
+          console.error('reCAPTCHA init error:', e);
+        }
       });
+
+      // Send OTP to phone (expects Indian numbers without +91 prefix in input)
+      function sendOTP() {
+        var raw = document.getElementById('phone').value || '';
+        raw = raw.replace(/\D/g,'');
+        if (!raw) { alert('Enter phone number'); return; }
+        var phoneNumber = raw.startsWith('+' ) ? raw : ('+91' + raw);
+        var appVerifier = window.recaptchaVerifier;
+        firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+          .then(function(confirmationResult) {
+            window.confirmationResult = confirmationResult;
+            alert('OTP sent successfully');
+          }).catch(function(error){
+            console.error(error);
+            alert(error && error.message ? error.message : 'Failed to send OTP');
+          });
+      }
+
+      // Verify OTP
+      function verifyOTP() {
+        var code = document.getElementById('otp').value || '';
+        if (!code) { alert('Enter OTP'); return; }
+        if (!window.confirmationResult) { alert('No OTP request found. Send OTP first.'); return; }
+        window.confirmationResult.confirm(code)
+          .then(function(result){
+            var user = result.user;
+            alert('Phone verified successfully');
+            // TODO: post-login flow (close modal / update UI)
+          }).catch(function(error){
+            console.error(error);
+            alert('Invalid OTP');
+          });
+      }
     </script>
 </body>
 </html>
