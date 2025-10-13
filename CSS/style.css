@@ -81,7 +81,7 @@ nav {
 .nav ul li a:hover,
 .nav ul li a:focus,
 .nav ul li a.active {
-  color: #fff;
+  color: darkcyan;
   background-color: rgba(255, 255, 255, 0.1);
 }
 
