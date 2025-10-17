@@ -921,44 +921,87 @@ section.featured-section {
 }
 
 /* Product Detail Page Styles */
+/* REPLACE existing product-detail & media styles with centered layout + balanced video height */
 .product-detail-container {
-    max-width: 800px;
-    margin: 40px auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    padding: 32px;
+  max-width: 800px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 32px;
+
+  /* ✅ Center the entire media section */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
+
+/* ✅ Main media container center aligned */
+.product-detail-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* ✅ Main image / video area */
 .product-images-main {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 16px;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
-.product-images-main img {
-    max-width: 350px;
-    max-height: 350px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+
+/* ✅ Maintain correct aspect ratio — no stretch */
+.product-images-main img,
+.product-images-main video {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5; /* adjust as per your product image shape (e.g., 1/1 for square) */
+  object-fit: contain; /* ensures full image is visible without cropping */
+  border-radius: 12px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+  background-color: #f8f8f8; /* light bg to fill empty space */
 }
+
+/* ✅ Thumbnail styling */
 .product-thumbnails {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 15px;
+  gap: 8px;
 }
-.product-thumbnails img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 2px solid #eee;
-    cursor: pointer;
-    transition: border 0.2s;
+
+.product-thumbnails img,
+.product-thumbnails video {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: all 0.3s ease;
 }
-.product-thumbnails img.active {
-    border: 2px solid #7fdbda;
+
+.product-thumbnails img:hover,
+.product-thumbnails video:hover {
+  opacity: 1;
+  transform: scale(1.05);
 }
+
+/* ✅ Highlight active item */
+.product-thumbnails .active {
+  border: 2px solid #00bcd4;
+  opacity: 1;
+  transform: scale(1.03);
+}
+
 .product-detail-title {
     font-size: 2rem;
     margin-bottom: 10px;
@@ -1417,4 +1460,13 @@ section.featured-section {
   box-sizing: border-box;
   max-width: 100%;
   min-width: 0;
+}
+.product-video {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  display: block;
+  object-fit: cover;
 }
