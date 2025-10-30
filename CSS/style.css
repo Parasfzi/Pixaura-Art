@@ -1420,7 +1420,7 @@ section.featured-section {
   width: 100%;
   height: auto;
   max-height: 420px; /* allow tall product photos */
-  object-fit: contain;
+  object-fit: contain; /* ensures full image is visible without cropping */
   border-radius: 8px;
   background: #fafafa;
   display: block;
@@ -1584,4 +1584,272 @@ section.featured-section {
 @media (max-width: 900px) {
   .featured-flex { grid-auto-rows: 1fr; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
   .featured-card img, .product-card img { max-height: 300px; }
+}
+
+/* ===== Align Add-to-Cart buttons: equal-height cards (no image crop) ===== */
+
+/* Ensure featured grid uses equal row heights */
+.featured-section .featured-flex {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  grid-auto-rows: 1fr;      /* every grid cell gets equal available height */
+  align-items: stretch;
+  justify-items: stretch;
+}
+
+/* Make each card fill its grid cell and be a vertical flex container */
+.featured-card,
+.product-card {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;     /* stretch children to card width */
+  height: 100%;             /* stretch to the grid row height */
+  box-sizing: border-box;
+}
+
+/* Images stay natural (no cropping) and don't stretch the flex layout */
+.featured-card img,
+.product-card img,
+.product-card .card-media img {
+  flex: 0 0 auto;           /* image does not flex-grow/ shrink the layout */
+  width: 100%;
+  height: auto;             /* preserve aspect ratio */
+  max-height: 360px;        /* reasonable visual limit, no crop */
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 12px;
+}
+
+/* Make the main text area grow so footer can be pinned to bottom */
+.featured-card .card-body,
+.product-card .card-body,
+.featured-card .card-content,
+.product-card .card-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Pin the button/footer to the card bottom and make it full width */
+.featured-card .featured-btn,
+.featured-card .card-footer,
+.product-card .card-footer,
+.product-card .add-to-cart-btn,
+.product-card .card-actions,
+.product-card .card-actions button {
+  margin-top: auto;         /* pushes footer/button to the bottom */
+  width: 100%;
+  align-self: stretch;
+  display: inline-block;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Keep button padding/appearance consistent */
+.featured-card .featured-btn,
+.product-card .add-to-cart-btn,
+.product-card .card-actions button {
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+/* Responsive adjustments (maintain equal-height behavior) */
+@media (max-width: 900px) {
+  .featured-section .featured-flex {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-auto-rows: 1fr;
+  }
+  .featured-card img,
+  .product-card img {
+    max-height: 300px;
+  }
+}
+
+/* ===== Ensure price text lines up across all cards ===== */
+/* Reserve space for title so price stays on same horizontal row */
+.featured-card h3,
+.product-card h3 {
+  min-height: 3.2rem; /* ~2 lines — adjust if you want more/less */
+  overflow: hidden;
+}
+
+/* Make price container fixed height and center text */
+.featured-card p.price,
+.product-card p.price,
+.product-card .price {
+  min-height: 1.6rem;          /* reserve vertical space for price */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--card-accent, #17b6ad);
+  margin: 6px 0 10px;
+}
+
+/* If you need stricter alignment, ensure body area grows consistently */
+.featured-card .card-body,
+.product-card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+  flex: 1 1 auto;
+}
+
+/* ===== Final fix: force equal-height grid rows and pin buttons reliably ===== */
+
+/* Use minmax(0,1fr) so content can shrink inside grid tracks (prevents overflow) */
+.featured-section .featured-flex {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  grid-auto-rows: minmax(0, 1fr); /* allow rows to be equal height but not overflow */
+  align-items: stretch;
+  justify-items: stretch;
+}
+
+/* Make every card fill its grid cell and be a vertical flex container */
+.featured-card,
+.product-card {
+  display: flex !important;
+  flex-direction: column;
+  height: 100% !important;
+  align-items: stretch !important; /* override any center alignment */
+  box-sizing: border-box;
+}
+
+/* If the card content is wrapped in an anchor, make that anchor fill the card */
+.featured-card > a,
+.product-card > a,
+.featured-card > .card-wrap,
+.product-card > .card-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Ensure the main content area grows and pushes footer to bottom */
+.featured-card .card-body,
+.product-card .card-body,
+.featured-card .card-content,
+.product-card .card-content,
+.featured-card > a > .card-body,
+.product-card > a > .card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0; /* important for flex children inside grid */
+}
+
+/* Make images not flex-grow (preserve aspect, no crop) */
+.featured-card img,
+.product-card img,
+.product-card .card-media img {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 12px;
+}
+
+/* Pin any kind of add-to-cart/button/footer to bottom reliably */
+.featured-card .featured-btn,
+.featured-card .card-footer,
+.product-card .card-footer,
+.product-card .add-to-cart-btn,
+.product-card .card-actions,
+.product-card .card-actions button,
+.featured-card > a .featured-btn,
+.product-card > a .add-to-cart-btn {
+  margin-top: auto !important;
+  align-self: stretch !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Ensure buttons have consistent height & alignment */
+.featured-card .featured-btn,
+.product-card .add-to-cart-btn,
+.product-card .card-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+/* Allow long titles/prices to wrap but keep reserved space behavior */
+.featured-card h3,
+.product-card h3 {
+  min-height: 3.2rem;
+  overflow: hidden;
+}
+
+/* small helper for mobile */
+@media (max-width: 900px) {
+  .featured-section .featured-flex { grid-auto-rows: minmax(0, 1fr); grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); }
+  .featured-card img, .product-card img { max-height: 300px; }
+}
+
+/* ===== Align prices to same horizontal line =====
+   Make the card body distribute space so price sits consistently
+   above the pinned footer (Add to Cart). Adjust min-height to taste. */
+.featured-card .card-body,
+.product-card .card-body,
+.featured-card > a > .card-body,
+.product-card > a > .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Title at top, price near bottom */
+  min-height: 110px;              /* reserve vertical space — tweak as needed */
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+/* Ensure title doesn't push price down unpredictably */
+.featured-card h3,
+.product-card h3 {
+  margin: 0;
+  line-height: 1.2;
+  /* allow 2 lines, then truncate so titles don't change price position */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Keep a consistent visual block for price */
+.featured-card p.price,
+.product-card p.price,
+.product-card .price {
+  margin: 0;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  text-align: center;
+  min-height: 1.6rem;     /* consistent height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Slight spacing between price and footer (button) */
+.product-card .card-footer,
+.featured-card .card-footer {
+  margin-top: 10px;
+}
+
+/* Mobile tweak: reduce min-heights so layout stays compact */
+@media (max-width: 900px) {
+  .featured-card .card-body,
+  .product-card .card-body {
+    min-height: 90px;
+  }
 }
