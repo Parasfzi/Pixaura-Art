@@ -293,6 +293,13 @@ section.featured-section {
   letter-spacing: 1px;
 }
 
+.featured-flex {
+  display: flex;
+  gap: 2.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
 .featured-card {
   background: #fff;
@@ -1082,6 +1089,17 @@ section.featured-section {
 #auth-section {
     background: transparent;
     box-shadow: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    /* width: 100%; */
+}
+main{
+  display: flex;
+  justify-content: center;
+  flex-direction: column  ;
+  align-items: center;
+
 }
 
 .login-form {
@@ -1100,16 +1118,12 @@ section.featured-section {
 }
 
 .login-form input {
-    width: 93.5%;
+    width: 94%;
     padding: 12px;
     margin: 8px 0;
     border: 1px solid #ddd;
     border-radius: 6px;
     transition: border-color 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
 }
 
 .login-form input:focus {
@@ -1258,7 +1272,7 @@ section.featured-section {
     margin-top: 1rem;
 }
 
-@media (max-width: 600px) {
+@media ( max-width: 600px), (min-width: 0px) {
     .login-form {
         padding: 1.5rem;
     }
@@ -1391,6 +1405,15 @@ section.featured-section {
   letter-spacing: 0.2px;
 }
 
+/* Grid: wider columns so cards look balanced */
+.featured-flex {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  align-items: start;
+  justify-items: stretch;
+  width: 100%;
+}
 
 /* Card: unify sizing and layout, don't center everything */
 .featured-card,
@@ -1405,8 +1428,10 @@ section.featured-section {
   gap: 10px;
   align-items: stretch;
   border: 1px solid rgba(10,20,24,0.03);
-  height: 510px; 
+  justify-content: space-between;
+  align-items: flex-end;
 }
+
 /* Keep original aspect (no crop) and allow taller images if available */
 .featured-card img,
 .product-card img,
@@ -1525,10 +1550,9 @@ section.featured-section {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
   justify-items: center;
-  align-items: center;
+  align-items: stretch;
   max-width: 1200px;
   margin: 0 auto;
-  height: 100%;
 }
 
 .featured-card {
