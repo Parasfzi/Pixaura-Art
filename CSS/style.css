@@ -293,13 +293,6 @@ section.featured-section {
   letter-spacing: 1px;
 }
 
-.featured-flex {
-  display: flex;
-  gap: 2.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  align-items: center;
-}
 
 .featured-card {
   background: #fff;
@@ -456,6 +449,7 @@ section.featured-section {
     justify-content: flex-start;
     padding-left: 0;
   }
+  
 }
 
 /* Hide hamburger by default */
@@ -493,6 +487,11 @@ section.featured-section {
   }
   nav {
     position: relative;
+  }
+  .filter-controls{
+    display: flex;
+    flex-direction: column;
+    /* border: 1px solid black; */
   }
 }
 
@@ -1101,12 +1100,16 @@ section.featured-section {
 }
 
 .login-form input {
-    width: 100%;
+    width: 93.5%;
     padding: 12px;
     margin: 8px 0;
     border: 1px solid #ddd;
     border-radius: 6px;
     transition: border-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .login-form input:focus {
@@ -1369,7 +1372,7 @@ section.featured-section {
 
 /* Container: simpler panel (less heavy shadow + tighter padding) */
 .featured-section {
-  background: #ffffff;
+  /* background: #ffffff; */
   padding: 32px 26px;
   margin: 32px auto;
   max-width: 1200px;
@@ -1388,15 +1391,6 @@ section.featured-section {
   letter-spacing: 0.2px;
 }
 
-/* Grid: wider columns so cards look balanced */
-.featured-flex {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  align-items: start;
-  justify-items: stretch;
-  width: 100%;
-}
 
 /* Card: unify sizing and layout, don't center everything */
 .featured-card,
@@ -1411,8 +1405,8 @@ section.featured-section {
   gap: 10px;
   align-items: stretch;
   border: 1px solid rgba(10,20,24,0.03);
+  height: 510px; 
 }
-
 /* Keep original aspect (no crop) and allow taller images if available */
 .featured-card img,
 .product-card img,
@@ -1519,337 +1513,131 @@ section.featured-section {
   outline-offset: 3px;
 }
 
-/* ===== Equal-height cards (keep images uncropped) ===== */
+/* --- Fix Featured Section Responsiveness --- */
 
-/* Ensure grid rows are flexible so cards can stretch to same height */
+.featured-section {
+  padding: 60px 20px;
+  text-align: center;
+}
+
 .featured-flex {
-  /* keep your existing template but add grid-auto-rows */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
-  grid-auto-rows: 1fr;       /* make every row's track flexible */
-  align-items: stretch;
-  justify-items: stretch;
-}
-
-/* Make each card a column flex container that fills the grid cell */
-.featured-card,
-.product-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;             /* stretch to the grid row height */
-  box-sizing: border-box;
-}
-
-/* Keep full image visible, do NOT crop */
-.featured-card img,
-.product-card img,
-.product-card .card-media img {
-  width: 100%;
-  height: auto;             /* preserve natural aspect ratio */
-  max-height: 360px;        /* limit extreme height but do not crop */
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
-  padding: 6px 0;
-}
-
-/* Ensure title/price area can grow and push the button to the bottom */
-.featured-card h3,
-.product-card h3,
-.featured-card p,
-.product-card p {
-  /* allow content area to take available space */
-  margin: 6px 0;
-}
-
-/* If button is an anchor with .featured-btn, push it to bottom */
-.featured-card .featured-btn,
-.product-card .card-actions,
-.product-card .card-actions button {
-  margin-top: auto;         /* pushes the button/footer to card bottom */
-}
-
-/* Make the button full width and consistent appearance */
-.featured-card .featured-btn,
-.product-card .card-actions button {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: 10px 12px;
-  border-radius: 8px;
-}
-
-/* Small screens: keep same behavior */
-@media (max-width: 900px) {
-  .featured-flex { grid-auto-rows: 1fr; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-  .featured-card img, .product-card img { max-height: 300px; }
-}
-
-/* ===== Align Add-to-Cart buttons: equal-height cards (no image crop) ===== */
-
-/* Ensure featured grid uses equal row heights */
-.featured-section .featured-flex {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  grid-auto-rows: 1fr;      /* every grid cell gets equal available height */
-  align-items: stretch;
-  justify-items: stretch;
-}
-
-/* Make each card fill its grid cell and be a vertical flex container */
-.featured-card,
-.product-card {
-  display: flex !important;
-  flex-direction: column;
-  align-items: stretch;     /* stretch children to card width */
-  height: 100%;             /* stretch to the grid row height */
-  box-sizing: border-box;
-}
-
-/* Images stay natural (no cropping) and don't stretch the flex layout */
-.featured-card img,
-.product-card img,
-.product-card .card-media img {
-  flex: 0 0 auto;           /* image does not flex-grow/ shrink the layout */
-  width: 100%;
-  height: auto;             /* preserve aspect ratio */
-  max-height: 360px;        /* reasonable visual limit, no crop */
-  object-fit: contain;
-  display: block;
-  margin: 0 auto 12px;
-}
-
-/* Make the main text area grow so footer can be pinned to bottom */
-.featured-card .card-body,
-.product-card .card-body,
-.featured-card .card-content,
-.product-card .card-content {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* Pin the button/footer to the card bottom and make it full width */
-.featured-card .featured-btn,
-.featured-card .card-footer,
-.product-card .card-footer,
-.product-card .add-to-cart-btn,
-.product-card .card-actions,
-.product-card .card-actions button {
-  margin-top: auto;         /* pushes footer/button to the bottom */
-  width: 100%;
-  align-self: stretch;
-  display: inline-block;
-  text-align: center;
-  box-sizing: border-box;
-}
-
-/* Keep button padding/appearance consistent */
-.featured-card .featured-btn,
-.product-card .add-to-cart-btn,
-.product-card .card-actions button {
-  padding: 10px 12px;
-  border-radius: 8px;
-}
-
-/* Responsive adjustments (maintain equal-height behavior) */
-@media (max-width: 900px) {
-  .featured-section .featured-flex {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    grid-auto-rows: 1fr;
-  }
-  .featured-card img,
-  .product-card img {
-    max-height: 300px;
-  }
-}
-
-/* ===== Ensure price text lines up across all cards ===== */
-/* Reserve space for title so price stays on same horizontal row */
-.featured-card h3,
-.product-card h3 {
-  min-height: 3.2rem; /* ~2 lines — adjust if you want more/less */
-  overflow: hidden;
-}
-
-/* Make price container fixed height and center text */
-.featured-card p.price,
-.product-card p.price,
-.product-card .price {
-  min-height: 1.6rem;          /* reserve vertical space for price */
-  display: flex;
+  justify-items: center;
   align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1rem;
-  color: var(--card-accent, #17b6ad);
-  margin: 6px 0 10px;
-}
-
-/* If you need stricter alignment, ensure body area grows consistently */
-.featured-card .card-body,
-.product-card .card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 8px;
-  flex: 1 1 auto;
-}
-
-/* ===== Final fix: force equal-height grid rows and pin buttons reliably ===== */
-
-/* Use minmax(0,1fr) so content can shrink inside grid tracks (prevents overflow) */
-.featured-section .featured-flex {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  grid-auto-rows: minmax(0, 1fr); /* allow rows to be equal height but not overflow */
-  align-items: stretch;
-  justify-items: stretch;
-}
-
-/* Make every card fill its grid cell and be a vertical flex container */
-.featured-card,
-.product-card {
-  display: flex !important;
-  flex-direction: column;
-  height: 100% !important;
-  align-items: stretch !important; /* override any center alignment */
-  box-sizing: border-box;
-}
-
-/* If the card content is wrapped in an anchor, make that anchor fill the card */
-.featured-card > a,
-.product-card > a,
-.featured-card > .card-wrap,
-.product-card > .card-wrap {
-  display: flex;
-  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
   height: 100%;
-  text-decoration: none;
-  color: inherit;
 }
 
-/* Ensure the main content area grows and pushes footer to bottom */
-.featured-card .card-body,
-.product-card .card-body,
-.featured-card .card-content,
-.product-card .card-content,
-.featured-card > a > .card-body,
-.product-card > a > .card-body {
-  flex: 1 1 auto;
+.featured-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 350px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-height: 0; /* important for flex children inside grid */
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Make images not flex-grow (preserve aspect, no crop) */
-.featured-card img,
-.product-card img,
-.product-card .card-media img {
-  flex: 0 0 auto;
+.featured-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.featured-card img {
   width: 100%;
   height: auto;
-  max-height: 360px;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto 12px;
+  border-radius: 12px;
+  margin-bottom: 15px;
 }
 
-/* Pin any kind of add-to-cart/button/footer to bottom reliably */
-.featured-card .featured-btn,
-.featured-card .card-footer,
-.product-card .card-footer,
-.product-card .add-to-cart-btn,
-.product-card .card-actions,
-.product-card .card-actions button,
-.featured-card > a .featured-btn,
-.product-card > a .add-to-cart-btn {
-  margin-top: auto !important;
-  align-self: stretch !important;
-  width: 100% !important;
-  box-sizing: border-box;
-}
-
-/* Ensure buttons have consistent height & alignment */
-.featured-card .featured-btn,
-.product-card .add-to-cart-btn,
-.product-card .card-actions button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 12px;
+.featured-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #00c9a7, #92fe9d);
+  color: #000;
+  font-weight: 600;
+  padding: 10px 16px;
   border-radius: 8px;
-}
-
-/* Allow long titles/prices to wrap but keep reserved space behavior */
-.featured-card h3,
-.product-card h3 {
-  min-height: 3.2rem;
-  overflow: hidden;
-}
-
-/* small helper for mobile */
-@media (max-width: 900px) {
-  .featured-section .featured-flex { grid-auto-rows: minmax(0, 1fr); grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); }
-  .featured-card img, .product-card img { max-height: 300px; }
-}
-
-/* ===== Align prices to same horizontal line =====
-   Make the card body distribute space so price sits consistently
-   above the pinned footer (Add to Cart). Adjust min-height to taste. */
-.featured-card .card-body,
-.product-card .card-body,
-.featured-card > a > .card-body,
-.product-card > a > .card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Title at top, price near bottom */
-  min-height: 110px;              /* reserve vertical space — tweak as needed */
-  gap: 8px;
-  box-sizing: border-box;
-}
-
-/* Ensure title doesn't push price down unpredictably */
-.featured-card h3,
-.product-card h3 {
-  margin: 0;
-  line-height: 1.2;
-  /* allow 2 lines, then truncate so titles don't change price position */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Keep a consistent visual block for price */
-.featured-card p.price,
-.product-card p.price,
-.product-card .price {
-  margin: 0;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  text-align: center;
-  min-height: 1.6rem;     /* consistent height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Slight spacing between price and footer (button) */
-.product-card .card-footer,
-.featured-card .card-footer {
+  text-decoration: none;
   margin-top: 10px;
+  transition: all 0.3s ease;
 }
 
-/* Mobile tweak: reduce min-heights so layout stays compact */
-@media (max-width: 900px) {
-  .featured-card .card-body,
-  .product-card .card-body {
-    min-height: 90px;
-  }
+.featured-btn:hover {
+  transform: scale(1.05);
+}
+
+/* --- Horizontal Scroll Featured Section (replace previous featured-section styles) --- */
+.featured-section {
+  padding: 60px 0;
+  text-align: center;
+  overflow: hidden;
+}
+
+.featured-section h2 {
+  margin-bottom: 30px;
+}
+
+.featured-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 30px;
+  padding: 20px 30px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.featured-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.featured-card {
+  flex: 0 0 80%;
+  max-width: 350px;
+  background: transparent;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scroll-snap-align: center;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
+}
+
+.featured-card img {
+  width: 100%;
+  border-radius: 12px;
+  background:  transparent;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.featured-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #00c9a7, #92fe9d);
+  color: #000;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.featured-btn:hover {
+  transform: scale(1.05);
+}
+
+/* make sure small screens still show one card per view */
+@media (max-width: 768px) {
+  .featured-card { flex: 0 0 90%; }
+  .featured-scroll { padding: 12px 18px; gap: 18px; }
 }

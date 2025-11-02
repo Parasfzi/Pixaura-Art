@@ -105,3 +105,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+//index page featured section scroll effect
+const scrollContainer = document.getElementById('featuredScroll');
+  const cards = scrollContainer.querySelectorAll('.featured-card');
+
+  function scaleCards() {
+    const containerCenter = scrollContainer.scrollLeft + scrollContainer.offsetWidth / 2;
+    cards.forEach(card => {
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const distance = Math.abs(containerCenter - cardCenter);
+      const scale = Math.max(0.8, 1 - distance / 500);
+      card.style.transform = `scale(${scale})`;
+      card.style.opacity = scale;
+    });
+  }
+
+  scrollContainer.addEventListener('scroll', scaleCards);
+  window.addEventListener('load', scaleCards);

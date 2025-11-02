@@ -190,9 +190,9 @@
 
                 let thumbnails = images.map((url, i) => {
                     if (isVideoUrl(url)) {
-                        return `<video src="${url}" class="${i===0?'active':''}" muted autoplay loop playsinline onclick="setMainImage(this.getAttribute('src'))"></video>`;
+                        return `<video src="${url}" class="${i === 0 ? 'active' : ''}" muted autoplay loop playsinline onclick="setMainImage(this.getAttribute('src'))"></video>`;
                     } else {
-                        return `<img src="${url}" alt="thumbnail ${i+1}" class="${i===0?'active':''}" onclick="setMainImage(this.getAttribute('src'))">`;
+                        return `<img src="${url}" alt="thumbnail ${i + 1}" class="${i === 0 ? 'active' : ''}" onclick="setMainImage(this.getAttribute('src'))">`;
                     }
                 }).join('');
 
