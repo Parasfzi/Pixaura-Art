@@ -1612,7 +1612,7 @@ main{
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   gap: 30px;
-  padding: 20px 30px;
+  padding: 20px 0px;
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
